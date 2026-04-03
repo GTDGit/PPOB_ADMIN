@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "node scripts/prepare-standalone.mjs",
+    "smoke:standalone": "node scripts/check-standalone-assets.mjs",
     "start": "next start",
     "lint": "eslint"
   },
