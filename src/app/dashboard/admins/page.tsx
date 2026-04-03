@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { adminApi } from "@/lib/api/admin";
 import { extractApiError } from "@/lib/api/client";
 import { formatDateTime } from "@/lib/format";
@@ -8,6 +8,8 @@ import { useAuth } from "@/lib/auth/AuthProvider";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { Panel } from "@/components/admin/Panel";
 import { AdminTable, type TableColumn } from "@/components/admin/AdminTable";
+import { DetailDrawer } from "@/components/admin/DetailDrawer";
+import { ExportCsvButton } from "@/components/admin/ExportCsvButton";
 import { Pagination } from "@/components/admin/Pagination";
 import { PermissionFallback } from "@/components/admin/PermissionFallback";
 import { StatusBadge } from "@/components/admin/StatusBadge";
@@ -27,6 +29,9 @@ export default function AdminsPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [inviteForm, setInviteForm] = useState(defaultInvite);
+  const [selectedDetail, setSelectedDetail] = useState<GenericRecord | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState("");
@@ -61,6 +66,20 @@ export default function AdminsPage() {
     if (!canView) return;
     void load();
   }, [canView, page]);
+
+  const openDetail = useCallback(async (id: string) => {
+    setDetailOpen(true);
+    setDetailLoading(true);
+    try {
+      const response = await adminApi.getAdminDetail(id);
+      setSelectedDetail(response);
+    } catch (error) {
+      setError(extractApiError(error));
+      setDetailOpen(false);
+    } finally {
+      setDetailLoading(false);
+    }
+  }, []);
 
   const handleSearch = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -152,6 +171,12 @@ export default function AdminsPage() {
           canManage ? (
             <div className="flex flex-wrap gap-2">
               <button
+                onClick={() => void openDetail(String(row.id))}
+                className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+              >
+                Detail
+              </button>
+              <button
                 onClick={() => void handleStatus(row, "active", true)}
                 className="rounded-2xl border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-700"
               >
@@ -165,11 +190,17 @@ export default function AdminsPage() {
               </button>
             </div>
           ) : (
-            <span className="text-xs text-slate-400">Read only</span>
+            <button
+              type="button"
+              onClick={() => void openDetail(String(row.id))}
+              className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+            >
+              Detail
+            </button>
           ),
       },
     ],
-    [canManage],
+    [canManage, openDetail],
   );
 
   if (!canView) {
@@ -257,6 +288,7 @@ export default function AdminsPage() {
       <Panel
         title="Daftar admin"
         description="Cari admin berdasarkan nama, email, atau nomor HP."
+        action={<ExportCsvButton rows={data?.items || []} filename="admins" />}
       >
         <form className="mb-5 flex flex-col gap-3 sm:flex-row" onSubmit={handleSearch}>
           <input
@@ -281,6 +313,16 @@ export default function AdminsPage() {
           onNext={() => setPage((current) => current + 1)}
         />
       </Panel>
+      <DetailDrawer
+        open={detailOpen}
+        title="Detail admin"
+        data={selectedDetail}
+        loading={detailLoading}
+        onClose={() => {
+          setDetailOpen(false);
+          setSelectedDetail(null);
+        }}
+      />
     </div>
   );
 }

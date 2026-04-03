@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ShieldCheck } from "lucide-react";
 import { useAuth, useAuthErrorMessage } from "@/lib/auth/AuthProvider";
@@ -84,6 +85,14 @@ function LoginPageContent() {
               className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
               required
             />
+            <div className="mt-2 text-right">
+              <Link
+                href="/forgot-password"
+                className="text-sm font-medium text-blue-600 underline decoration-blue-200 underline-offset-4"
+              >
+                Lupa password?
+              </Link>
+            </div>
           </div>
 
           <div>

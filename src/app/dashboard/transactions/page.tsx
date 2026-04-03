@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { adminApi } from "@/lib/api/admin";
 import { extractApiError } from "@/lib/api/client";
 import { formatCurrency, formatDateTime } from "@/lib/format";
@@ -8,6 +8,8 @@ import { useAuth } from "@/lib/auth/AuthProvider";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { Panel } from "@/components/admin/Panel";
 import { AdminTable, type TableColumn } from "@/components/admin/AdminTable";
+import { DetailDrawer } from "@/components/admin/DetailDrawer";
+import { ExportCsvButton } from "@/components/admin/ExportCsvButton";
 import { Pagination } from "@/components/admin/Pagination";
 import { PermissionFallback } from "@/components/admin/PermissionFallback";
 import { StatusBadge } from "@/components/admin/StatusBadge";
@@ -19,6 +21,9 @@ export default function TransactionsPage() {
   const [status, setStatus] = useState("all");
   const [page, setPage] = useState(1);
   const [data, setData] = useState<PaginatedResponse<GenericRecord> | null>(null);
+  const [selectedDetail, setSelectedDetail] = useState<GenericRecord | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(false);
   const [error, setError] = useState("");
 
   const canView = hasPermission("transactions.view");
@@ -36,6 +41,20 @@ export default function TransactionsPage() {
     if (!canView) return;
     void load();
   }, [canView, page]);
+
+  const openDetail = useCallback(async (id: string) => {
+    setDetailOpen(true);
+    setDetailLoading(true);
+    try {
+      const response = await adminApi.getTransactionDetail(id);
+      setSelectedDetail(response);
+    } catch (error) {
+      setError(extractApiError(error));
+      setDetailOpen(false);
+    } finally {
+      setDetailLoading(false);
+    }
+  }, []);
 
   const columns = useMemo<TableColumn<GenericRecord>[]>(
     () => [
@@ -81,8 +100,21 @@ export default function TransactionsPage() {
         header: "Waktu",
         render: (row) => formatDateTime(row.created_at as string),
       },
+      {
+        key: "detail",
+        header: "Detail",
+        render: (row) => (
+          <button
+            type="button"
+            onClick={() => void openDetail(String(row.id))}
+            className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+          >
+            Lihat detail
+          </button>
+        ),
+      },
     ],
-    [],
+    [openDetail],
   );
 
   if (!canView) return <PermissionFallback />;
@@ -99,7 +131,11 @@ export default function TransactionsPage() {
           {error}
         </div>
       ) : null}
-      <Panel title="Daftar transaksi" description="Filter transaksi untuk kebutuhan operasional dan investigasi.">
+      <Panel
+        title="Daftar transaksi"
+        description="Filter transaksi untuk kebutuhan operasional dan investigasi."
+        action={<ExportCsvButton rows={data?.items || []} filename="transactions" />}
+      >
         <form
           className="mb-5 grid gap-3 md:grid-cols-[1fr,220px,auto]"
           onSubmit={(event) => {
@@ -136,6 +172,16 @@ export default function TransactionsPage() {
           onNext={() => setPage((current) => current + 1)}
         />
       </Panel>
+      <DetailDrawer
+        open={detailOpen}
+        title="Detail transaksi"
+        data={selectedDetail}
+        loading={detailLoading}
+        onClose={() => {
+          setDetailOpen(false);
+          setSelectedDetail(null);
+        }}
+      />
     </div>
   );
 }

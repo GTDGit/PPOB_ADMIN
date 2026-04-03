@@ -76,6 +76,11 @@ export interface AdminInviteAcceptPayload {
   recoveryCodes: string[];
 }
 
+export interface AdminPasswordResetPreview {
+  email: string;
+  expiresAt: string;
+}
+
 export interface AdminDashboardSummary {
   totalUsers: number;
   activeAdmins: number;

@@ -4,6 +4,7 @@ import type {
   AdminDashboardSummary,
   AdminInviteAcceptPayload,
   AdminInvitePreview,
+  AdminPasswordResetPreview,
   AdminPermission,
   AdminRole,
   AdminUserSummary,
@@ -33,6 +34,17 @@ export interface ActivationPayload {
 export interface ConfirmTOTPActivationPayload {
   token: string;
   code: string;
+}
+
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface ResetPasswordPayload {
+  token: string;
+  newPassword: string;
+  totpCode?: string;
+  recoveryCode?: string;
 }
 
 export interface SettingPayload {
@@ -72,6 +84,21 @@ export const adminApi = {
       apiClient.post("/auth/refresh", { refreshToken }),
     );
   },
+  forgotPassword(payload: ForgotPasswordPayload) {
+    return unwrapResponse<{ message: string }>(
+      apiClient.post("/auth/forgot-password", payload),
+    );
+  },
+  getPasswordResetPreview(token: string) {
+    return unwrapResponse<AdminPasswordResetPreview>(
+      apiClient.get(`/auth/password-resets/${token}`),
+    );
+  },
+  resetPassword(payload: ResetPasswordPayload) {
+    return unwrapResponse<{ message: string }>(
+      apiClient.post("/auth/password-resets/confirm", payload),
+    );
+  },
   logout() {
     return unwrapResponse<{ message: string }>(apiClient.post("/auth/logout"));
   },
@@ -107,6 +134,9 @@ export const adminApi = {
       apiClient.get("/admins", listParams({ search, page, perPage })),
     );
   },
+  getAdminDetail(id: string) {
+    return unwrapResponse<GenericRecord>(apiClient.get(`/admins/${id}`));
+  },
   createInvite(payload: InvitePayload) {
     return unwrapResponse<{ inviteId: string; inviteLink: string; emailSent: boolean; expiresAt: string }>(
       apiClient.post("/admins/invite", payload),
@@ -122,15 +152,24 @@ export const adminApi = {
       apiClient.get("/customers", listParams({ search, page, perPage })),
     );
   },
+  getCustomerDetail(id: string) {
+    return unwrapResponse<GenericRecord>(apiClient.get(`/customers/${id}`));
+  },
   listTransactions(search = "", status = "all", page = 1, perPage = 20) {
     return unwrapResponse<PaginatedResponse<GenericRecord>>(
       apiClient.get("/transactions", listParams({ search, status, page, perPage })),
     );
   },
+  getTransactionDetail(id: string) {
+    return unwrapResponse<GenericRecord>(apiClient.get(`/transactions/${id}`));
+  },
   listDeposits(search = "", status = "all", page = 1, perPage = 20) {
     return unwrapResponse<PaginatedResponse<GenericRecord>>(
       apiClient.get("/deposits", listParams({ search, status, page, perPage })),
     );
+  },
+  getDepositDetail(id: string) {
+    return unwrapResponse<GenericRecord>(apiClient.get(`/deposits/${id}`));
   },
   approveDeposit(id: string) {
     return unwrapResponse<{ message: string }>(
@@ -145,10 +184,16 @@ export const adminApi = {
       apiClient.get("/qris", listParams({ search, page, perPage })),
     );
   },
+  getQrisDetail(id: string) {
+    return unwrapResponse<GenericRecord>(apiClient.get(`/qris/${id}`));
+  },
   listVouchers(search = "", page = 1, perPage = 20) {
     return unwrapResponse<PaginatedResponse<GenericRecord>>(
       apiClient.get("/vouchers", listParams({ search, page, perPage })),
     );
+  },
+  getVoucherDetail(id: string) {
+    return unwrapResponse<GenericRecord>(apiClient.get(`/vouchers/${id}`));
   },
   createVoucher(payload: GenericRecord) {
     return unwrapResponse<{ message: string }>(apiClient.post("/vouchers", payload));
@@ -180,6 +225,9 @@ export const adminApi = {
     return unwrapResponse<PaginatedResponse<GenericRecord>>(
       apiClient.get("/kyc", listParams({ search, status, page, perPage })),
     );
+  },
+  getKycDetail(userId: string) {
+    return unwrapResponse<GenericRecord>(apiClient.get(`/kyc/${userId}`));
   },
   approveKyc(userId: string) {
     return unwrapResponse<{ message: string }>(

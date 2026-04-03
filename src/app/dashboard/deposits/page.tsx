@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { adminApi } from "@/lib/api/admin";
 import { extractApiError } from "@/lib/api/client";
 import { formatCurrency, formatDateTime } from "@/lib/format";
@@ -8,6 +8,8 @@ import { useAuth } from "@/lib/auth/AuthProvider";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { Panel } from "@/components/admin/Panel";
 import { AdminTable, type TableColumn } from "@/components/admin/AdminTable";
+import { DetailDrawer } from "@/components/admin/DetailDrawer";
+import { ExportCsvButton } from "@/components/admin/ExportCsvButton";
 import { Pagination } from "@/components/admin/Pagination";
 import { PermissionFallback } from "@/components/admin/PermissionFallback";
 import { StatusBadge } from "@/components/admin/StatusBadge";
@@ -19,6 +21,9 @@ export default function DepositsPage() {
   const [status, setStatus] = useState("all");
   const [page, setPage] = useState(1);
   const [data, setData] = useState<PaginatedResponse<GenericRecord> | null>(null);
+  const [selectedDetail, setSelectedDetail] = useState<GenericRecord | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -38,6 +43,20 @@ export default function DepositsPage() {
     if (!canView) return;
     void load();
   }, [canView, page]);
+
+  const openDetail = useCallback(async (id: string) => {
+    setDetailOpen(true);
+    setDetailLoading(true);
+    try {
+      const response = await adminApi.getDepositDetail(id);
+      setSelectedDetail(response);
+    } catch (error) {
+      setError(extractApiError(error));
+      setDetailOpen(false);
+    } finally {
+      setDetailLoading(false);
+    }
+  }, []);
 
   const act = async (kind: "approve" | "reject", id: string) => {
     setError("");
@@ -102,6 +121,12 @@ export default function DepositsPage() {
           canApprove && String(row.status || "") === "pending" ? (
             <div className="flex flex-wrap gap-2">
               <button
+                onClick={() => void openDetail(String(row.id))}
+                className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+              >
+                Detail
+              </button>
+              <button
                 onClick={() => void act("approve", String(row.id))}
                 className="rounded-2xl bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white"
               >
@@ -115,11 +140,17 @@ export default function DepositsPage() {
               </button>
             </div>
           ) : (
-            <span className="text-xs text-slate-400">-</span>
+            <button
+              type="button"
+              onClick={() => void openDetail(String(row.id))}
+              className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+            >
+              Detail
+            </button>
           ),
       },
     ],
-    [canApprove],
+    [canApprove, openDetail],
   );
 
   if (!canView) return <PermissionFallback />;
@@ -141,7 +172,11 @@ export default function DepositsPage() {
           {success}
         </div>
       ) : null}
-      <Panel title="Daftar deposit" description="Cari deposit berdasarkan user, nominal, atau status pembayaran.">
+      <Panel
+        title="Daftar deposit"
+        description="Cari deposit berdasarkan user, nominal, atau status pembayaran."
+        action={<ExportCsvButton rows={data?.items || []} filename="deposits" />}
+      >
         <form
           className="mb-5 grid gap-3 md:grid-cols-[1fr,220px,auto]"
           onSubmit={(event) => {
@@ -178,6 +213,16 @@ export default function DepositsPage() {
           onNext={() => setPage((current) => current + 1)}
         />
       </Panel>
+      <DetailDrawer
+        open={detailOpen}
+        title="Detail deposit"
+        data={selectedDetail}
+        loading={detailLoading}
+        onClose={() => {
+          setDetailOpen(false);
+          setSelectedDetail(null);
+        }}
+      />
     </div>
   );
 }

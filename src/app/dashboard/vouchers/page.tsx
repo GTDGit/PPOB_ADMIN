@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { adminApi } from "@/lib/api/admin";
 import { extractApiError } from "@/lib/api/client";
 import { formatCurrency, formatDateTime } from "@/lib/format";
@@ -8,6 +8,8 @@ import { useAuth } from "@/lib/auth/AuthProvider";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { Panel } from "@/components/admin/Panel";
 import { AdminTable, type TableColumn } from "@/components/admin/AdminTable";
+import { DetailDrawer } from "@/components/admin/DetailDrawer";
+import { ExportCsvButton } from "@/components/admin/ExportCsvButton";
 import { Pagination } from "@/components/admin/Pagination";
 import { PermissionFallback } from "@/components/admin/PermissionFallback";
 import { StatusBadge } from "@/components/admin/StatusBadge";
@@ -33,6 +35,9 @@ export default function VouchersPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [data, setData] = useState<PaginatedResponse<GenericRecord> | null>(null);
+  const [selectedDetail, setSelectedDetail] = useState<GenericRecord | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(false);
   const [form, setForm] = useState(defaultForm);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -53,6 +58,20 @@ export default function VouchersPage() {
     if (!canView) return;
     void load();
   }, [canView, page]);
+
+  const openDetail = useCallback(async (id: string) => {
+    setDetailOpen(true);
+    setDetailLoading(true);
+    try {
+      const response = await adminApi.getVoucherDetail(id);
+      setSelectedDetail(response);
+    } catch (error) {
+      setError(extractApiError(error));
+      setDetailOpen(false);
+    } finally {
+      setDetailLoading(false);
+    }
+  }, []);
 
   const createVoucher = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -134,18 +153,33 @@ export default function VouchersPage() {
         header: "Aksi",
         render: (row) =>
           canManage ? (
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => void openDetail(String(row.id))}
+                className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+              >
+                Detail
+              </button>
+              <button
+                onClick={() => void toggleVoucher(row)}
+                className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+              >
+                {Boolean(row.is_active) ? "Nonaktifkan" : "Aktifkan"}
+              </button>
+            </div>
+          ) : (
             <button
-              onClick={() => void toggleVoucher(row)}
+              type="button"
+              onClick={() => void openDetail(String(row.id))}
               className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
             >
-              {Boolean(row.is_active) ? "Nonaktifkan" : "Aktifkan"}
+              Detail
             </button>
-          ) : (
-            "-"
           ),
       },
     ],
-    [canManage],
+    [canManage, openDetail],
   );
 
   if (!canView) return <PermissionFallback />;
@@ -183,7 +217,11 @@ export default function VouchersPage() {
           </form>
         </Panel>
       ) : null}
-      <Panel title="Daftar voucher" description="Voucher aktif dan nonaktif yang saat ini tersimpan di sistem.">
+      <Panel
+        title="Daftar voucher"
+        description="Voucher aktif dan nonaktif yang saat ini tersimpan di sistem."
+        action={<ExportCsvButton rows={data?.items || []} filename="vouchers" />}
+      >
         <form className="mb-5 flex flex-col gap-3 sm:flex-row" onSubmit={(e) => { e.preventDefault(); setPage(1); void load(); }}>
           <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cari voucher..." className="w-full rounded-2xl border border-slate-200 px-4 py-3" />
           <button className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white">Cari</button>
@@ -191,6 +229,16 @@ export default function VouchersPage() {
         <AdminTable columns={columns} rows={data?.items || []} />
         <Pagination page={data?.page || page} hasNext={Boolean(data?.hasNext)} onPrevious={() => setPage((current) => Math.max(1, current - 1))} onNext={() => setPage((current) => current + 1)} />
       </Panel>
+      <DetailDrawer
+        open={detailOpen}
+        title="Detail voucher"
+        data={selectedDetail}
+        loading={detailLoading}
+        onClose={() => {
+          setDetailOpen(false);
+          setSelectedDetail(null);
+        }}
+      />
     </div>
   );
 }

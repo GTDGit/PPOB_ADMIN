@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { adminApi } from "@/lib/api/admin";
 import { extractApiError } from "@/lib/api/client";
 import { formatDateTime } from "@/lib/format";
@@ -8,6 +8,8 @@ import { useAuth } from "@/lib/auth/AuthProvider";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { Panel } from "@/components/admin/Panel";
 import { AdminTable, type TableColumn } from "@/components/admin/AdminTable";
+import { DetailDrawer } from "@/components/admin/DetailDrawer";
+import { ExportCsvButton } from "@/components/admin/ExportCsvButton";
 import { Pagination } from "@/components/admin/Pagination";
 import { PermissionFallback } from "@/components/admin/PermissionFallback";
 import { StatusBadge } from "@/components/admin/StatusBadge";
@@ -19,6 +21,9 @@ export default function KycPage() {
   const [status, setStatus] = useState("all");
   const [page, setPage] = useState(1);
   const [data, setData] = useState<PaginatedResponse<GenericRecord> | null>(null);
+  const [selectedDetail, setSelectedDetail] = useState<GenericRecord | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -38,6 +43,20 @@ export default function KycPage() {
     if (!canView) return;
     void load();
   }, [canView, page]);
+
+  const openDetail = useCallback(async (userId: string) => {
+    setDetailOpen(true);
+    setDetailLoading(true);
+    try {
+      const response = await adminApi.getKycDetail(userId);
+      setSelectedDetail(response);
+    } catch (error) {
+      setError(extractApiError(error));
+      setDetailOpen(false);
+    } finally {
+      setDetailLoading(false);
+    }
+  }, []);
 
   const act = async (kind: "approve" | "reject", userId: string) => {
     setError("");
@@ -103,6 +122,12 @@ export default function KycPage() {
           canApprove ? (
             <div className="flex flex-wrap gap-2">
               <button
+                onClick={() => void openDetail(String(row.user_id))}
+                className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+              >
+                Detail
+              </button>
+              <button
                 onClick={() => void act("approve", String(row.user_id))}
                 className="rounded-2xl bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white"
               >
@@ -116,11 +141,17 @@ export default function KycPage() {
               </button>
             </div>
           ) : (
-            "-"
+            <button
+              type="button"
+              onClick={() => void openDetail(String(row.user_id))}
+              className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+            >
+              Detail
+            </button>
           ),
       },
     ],
-    [canApprove],
+    [canApprove, openDetail],
   );
 
   if (!canView) return <PermissionFallback />;
@@ -130,7 +161,11 @@ export default function KycPage() {
       <PageHeader eyebrow="KYC" title="Review verifikasi identitas" description="Pantau status verifikasi user dan proses approve/reject dokumen KYC." />
       {error ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
       {success ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div> : null}
-      <Panel title="Daftar KYC" description="Filter berdasarkan nama, nomor, email, NIK, atau status KYC.">
+      <Panel
+        title="Daftar KYC"
+        description="Filter berdasarkan nama, nomor, email, NIK, atau status KYC."
+        action={<ExportCsvButton rows={data?.items || []} filename="kyc" />}
+      >
         <form className="mb-5 grid gap-3 md:grid-cols-[1fr,220px,auto]" onSubmit={(e) => { e.preventDefault(); setPage(1); void load(); }}>
           <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cari KYC..." className="rounded-2xl border border-slate-200 px-4 py-3" />
           <select value={status} onChange={(e) => setStatus(e.target.value)} className="rounded-2xl border border-slate-200 px-4 py-3">
@@ -144,6 +179,16 @@ export default function KycPage() {
         <AdminTable columns={columns} rows={data?.items || []} />
         <Pagination page={data?.page || page} hasNext={Boolean(data?.hasNext)} onPrevious={() => setPage((current) => Math.max(1, current - 1))} onNext={() => setPage((current) => current + 1)} />
       </Panel>
+      <DetailDrawer
+        open={detailOpen}
+        title="Detail KYC"
+        data={selectedDetail}
+        loading={detailLoading}
+        onClose={() => {
+          setDetailOpen(false);
+          setSelectedDetail(null);
+        }}
+      />
     </div>
   );
 }
