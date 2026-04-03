@@ -96,6 +96,10 @@ function ActivatePageContent() {
     try {
       const response = await adminApi.confirmInviteTOTP({ token, code: totpCode });
       completeActivation(response);
+      if (typeof window !== "undefined") {
+        window.location.replace("/dashboard");
+        return;
+      }
       router.replace("/dashboard");
     } catch (error) {
       setError(useAuthErrorMessage(error));

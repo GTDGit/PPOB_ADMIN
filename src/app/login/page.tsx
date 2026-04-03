@@ -25,6 +25,10 @@ function LoginPageContent() {
 
     try {
       await login({ email, password, totpCode });
+      if (typeof window !== "undefined") {
+        window.location.replace(nextUrl);
+        return;
+      }
       router.replace(nextUrl);
     } catch (error) {
       setError(useAuthErrorMessage(error));
