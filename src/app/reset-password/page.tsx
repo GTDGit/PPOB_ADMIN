@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { KeyRound } from "lucide-react";
+import { AdminAuthShell } from "@/components/auth/AdminAuthShell";
 import { useSearchParams } from "next/navigation";
 import { adminApi } from "@/lib/api/admin";
 import { extractApiError } from "@/lib/api/client";
@@ -81,25 +81,12 @@ function ResetPasswordContent() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-10">
-      <div className="surface w-full max-w-xl p-8 sm:p-10">
-        <div className="flex flex-col items-center text-center">
-          <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-3xl bg-blue-50 text-blue-600 ring-1 ring-blue-100">
-            <KeyRound className="h-8 w-8" />
-          </div>
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">
-            Reset Password
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold text-slate-950">
-            Buat password admin baru
-          </h1>
-          <p className="mt-3 max-w-lg text-sm leading-6 text-slate-600">
-            Gunakan link reset dari email, lalu verifikasi dengan kode
-            authenticator atau recovery code.
-          </p>
-        </div>
-
-        <div className="mt-6 rounded-2xl bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600">
+    <AdminAuthShell
+      badge="Reset Password"
+      title="Buat password admin baru"
+      description="Gunakan link reset dari email, lalu verifikasi dengan kode authenticator atau recovery code."
+    >
+      <div className="auth-muted-card mt-1 px-4 py-4 text-sm leading-6 text-slate-600">
           {previewLoading
             ? "Memeriksa link reset password..."
             : preview
@@ -108,20 +95,21 @@ function ResetPasswordContent() {
                   timeStyle: "short",
                 }).format(new Date(preview.expiresAt))}.`
               : "Link reset tidak valid atau sudah kadaluarsa."}
-        </div>
+      </div>
 
-        <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
-          {error ? (
-            <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-              {error}
-            </div>
-          ) : null}
-          {success ? (
-            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-              {success}
-            </div>
-          ) : null}
+      <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+        {error ? (
+          <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+            {error}
+          </div>
+        ) : null}
+        {success ? (
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            {success}
+          </div>
+        ) : null}
 
+        <div className="grid gap-5 md:grid-cols-2">
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">
               Password baru
@@ -183,26 +171,26 @@ function ResetPasswordContent() {
               Isi salah satu: kode authenticator atau recovery code.
             </p>
           </div>
-
-          <button
-            type="submit"
-            disabled={loading || !preview || Boolean(success)}
-            className="w-full rounded-2xl bg-blue-600 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {loading ? "Memperbarui password..." : "Simpan password baru"}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center text-sm text-slate-600">
-          <Link
-            href="/login"
-            className="font-medium text-blue-600 underline decoration-blue-200 underline-offset-4"
-          >
-            Kembali ke login admin
-          </Link>
         </div>
+
+        <button
+          type="submit"
+          disabled={loading || !preview || Boolean(success)}
+          className="w-full rounded-2xl bg-blue-600 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {loading ? "Memperbarui password..." : "Simpan password baru"}
+        </button>
+      </form>
+
+      <div className="mt-6 text-center text-sm text-slate-600">
+        <Link
+          href="/login"
+          className="font-medium text-blue-600 underline decoration-blue-200 underline-offset-4"
+        >
+          Kembali ke login admin
+        </Link>
       </div>
-    </div>
+    </AdminAuthShell>
   );
 }
 
@@ -210,8 +198,8 @@ export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center px-4 py-10">
-          <div className="surface w-full max-w-xl p-8 text-center text-sm text-slate-500">
+        <div className="admin-auth-shell flex min-h-screen items-center justify-center px-4 py-10">
+          <div className="auth-card w-full max-w-xl p-8 text-center text-sm text-slate-500">
             Menyiapkan halaman reset password...
           </div>
         </div>

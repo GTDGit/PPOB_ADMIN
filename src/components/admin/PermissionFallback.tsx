@@ -4,9 +4,14 @@ export function PermissionFallback({
   message?: string;
 }) {
   return (
-    <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
-      <h2 className="text-xl font-semibold text-slate-900">Akses dibatasi</h2>
-      <p className="mt-3 text-sm leading-6 text-slate-600">{message}</p>
+    <div className="surface-solid border-dashed px-6 py-14 text-center">
+      <span className="inline-flex rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-amber-700">
+        Akses dibatasi
+      </span>
+      <h2 className="mt-4 text-xl font-semibold text-slate-900">
+        Halaman ini belum tersedia untuk role Anda
+      </h2>
+      <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-600">{message}</p>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import QRCode from "qrcode";
 import { useSearchParams, useRouter } from "next/navigation";
+import { AdminAuthShell } from "@/components/auth/AdminAuthShell";
 import { adminApi } from "@/lib/api/admin";
 import { useAuth, useAuthErrorMessage } from "@/lib/auth/AuthProvider";
 import { APP_URL, TOTP_ISSUER } from "@/lib/config";
@@ -104,20 +105,25 @@ function ActivatePageContent() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-10">
-      <div className="surface w-full max-w-3xl p-8 sm:p-10">
-        <div className="text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">
-            PPOB.ID Admin
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold text-slate-950">
-            {headerTitle}
-          </h1>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
-            Undangan admin akan mengaktifkan akun operasional Anda untuk
-            console internal PPOB.ID.
-          </p>
-        </div>
+    <AdminAuthShell
+      badge="Aktivasi Admin"
+      title={headerTitle}
+      description="Undangan admin akan mengaktifkan akun operasional Anda untuk console internal PPOB.ID."
+      highlights={[
+        {
+          title: "Akun dibuat khusus untuk admin",
+          description: "Akses admin terpisah dari akun user aplikasi agar lebih aman dan terkontrol.",
+        },
+        {
+          title: "Setup sekali, lalu siap operasional",
+          description: "Lengkapi password dan authenticator untuk mulai memakai console.",
+        },
+        {
+          title: "Jejak aktivitas tercatat",
+          description: "Setiap aksi sensitif di console dicatat untuk kebutuhan audit internal.",
+        },
+      ]}
+    >
 
         {error ? (
           <div className="mt-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
@@ -126,14 +132,17 @@ function ActivatePageContent() {
         ) : null}
 
         {loading ? (
-          <div className="mt-8 rounded-3xl bg-slate-50 px-6 py-16 text-center text-sm text-slate-500">
+          <div className="auth-muted-card mt-8 px-6 py-16 text-center text-sm text-slate-500">
             Memuat data undangan admin...
           </div>
         ) : null}
 
         {!loading && preview && !activation ? (
           <div className="mt-8 grid gap-6 lg:grid-cols-[1.1fr,0.9fr]">
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+            <div className="auth-muted-card p-6">
+              <span className="inline-flex rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">
+                Langkah 1
+              </span>
               <h2 className="text-lg font-semibold text-slate-950">
                 Detail undangan
               </h2>
@@ -159,7 +168,13 @@ function ActivatePageContent() {
               </dl>
             </div>
 
-            <form className="space-y-5" onSubmit={handleCreateCredentials}>
+            <form
+              className="space-y-5 rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm"
+              onSubmit={handleCreateCredentials}
+            >
+              <span className="inline-flex rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">
+                Buat kredensial
+              </span>
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
                   Nama lengkap
@@ -197,7 +212,10 @@ function ActivatePageContent() {
 
         {!loading && activation ? (
           <div className="mt-8 grid gap-6 lg:grid-cols-[0.95fr,1.05fr]">
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+            <div className="auth-muted-card p-6">
+              <span className="inline-flex rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">
+                Langkah 2
+              </span>
               <h2 className="text-lg font-semibold text-slate-950">
                 Scan QR code
               </h2>
@@ -231,7 +249,7 @@ function ActivatePageContent() {
             </div>
 
             <div className="space-y-6">
-              <div className="rounded-3xl border border-slate-200 bg-white p-6">
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                 <h2 className="text-lg font-semibold text-slate-950">
                   Recovery codes
                 </h2>
@@ -252,7 +270,7 @@ function ActivatePageContent() {
               </div>
 
               <form
-                className="rounded-3xl border border-slate-200 bg-white p-6"
+                className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
                 onSubmit={handleConfirm}
               >
                 <h2 className="text-lg font-semibold text-slate-950">
@@ -299,8 +317,7 @@ function ActivatePageContent() {
           Jika undangan admin bermasalah, minta Super Admin membuat invite baru
           dari {APP_URL}.
         </p>
-      </div>
-    </div>
+    </AdminAuthShell>
   );
 }
 
@@ -308,8 +325,8 @@ export default function ActivatePage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center px-4 py-10">
-          <div className="surface w-full max-w-3xl p-8 text-center text-sm text-slate-500">
+        <div className="admin-auth-shell flex min-h-screen items-center justify-center px-4 py-10">
+          <div className="auth-card w-full max-w-3xl p-8 text-center text-sm text-slate-500">
             Memuat aktivasi admin...
           </div>
         </div>
