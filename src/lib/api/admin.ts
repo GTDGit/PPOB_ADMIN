@@ -4,12 +4,16 @@ import type {
   AdminDashboardSummary,
   AdminInviteAcceptPayload,
   AdminInvitePreview,
+  AdminMailbox,
   AdminPasswordResetPreview,
   AdminPermission,
   AdminRole,
   AdminUserSummary,
   GenericRecord,
+  MailboxCollectionPayload,
+  MailboxThreadsPayload,
   PaginatedResponse,
+  ThreadDetailPayload,
 } from "@/lib/types";
 
 export interface LoginPayload {
@@ -69,6 +73,22 @@ export interface BalanceAdjustmentPayload {
 
 export interface VoucherStatusPayload {
   isActive: boolean;
+}
+
+export interface MailboxPayload {
+  type: string;
+  address: string;
+  displayName: string;
+  ownerAdminId?: string;
+  isActive: boolean;
+  memberIds?: string[];
+}
+
+export interface MailReplyPayload {
+  body?: string;
+  htmlBody?: string;
+  cc?: string[];
+  bcc?: string[];
 }
 
 const listParams = (params?: Record<string, string | number | undefined>) => ({
@@ -286,6 +306,59 @@ export const adminApi = {
   listReferenceData() {
     return unwrapResponse<Record<string, GenericRecord[]>>(
       apiClient.get("/reference-data"),
+    );
+  },
+  listMailboxes() {
+    return unwrapResponse<MailboxCollectionPayload>(apiClient.get("/mailboxes"));
+  },
+  createMailbox(payload: MailboxPayload) {
+    return unwrapResponse<{ mailbox: AdminMailbox; members: GenericRecord[] }>(
+      apiClient.post("/mailboxes", payload),
+    );
+  },
+  updateMailbox(id: string, payload: MailboxPayload) {
+    return unwrapResponse<{ mailbox: AdminMailbox; members: GenericRecord[] }>(
+      apiClient.patch(`/mailboxes/${id}`, payload),
+    );
+  },
+  listMailboxThreads(
+    mailboxId: string,
+    params?: {
+      search?: string;
+      status?: string;
+      assigned?: string;
+      unreadOnly?: boolean;
+      page?: number;
+      perPage?: number;
+    },
+  ) {
+    return unwrapResponse<MailboxThreadsPayload>(
+      apiClient.get(`/mailboxes/${mailboxId}/threads`, {
+        params,
+      }),
+    );
+  },
+  getThreadDetail(id: string) {
+    return unwrapResponse<ThreadDetailPayload>(apiClient.get(`/threads/${id}`));
+  },
+  replyThread(id: string, payload: MailReplyPayload) {
+    return unwrapResponse<{ message: string; threadId: string; messageId: string; providerMessageId?: string }>(
+      apiClient.post(`/threads/${id}/reply`, payload),
+    );
+  },
+  updateThreadStatus(id: string, status: string) {
+    return unwrapResponse<{ message: string }>(
+      apiClient.patch(`/threads/${id}/status`, { status }),
+    );
+  },
+  assignThread(id: string, adminUserId: string) {
+    return unwrapResponse<{ message: string }>(
+      apiClient.patch(`/threads/${id}/assign`, { adminUserId }),
+    );
+  },
+  listEmailLogs(search = "", status = "all", category = "all", page = 1, perPage = 20) {
+    return unwrapResponse<PaginatedResponse<GenericRecord>>(
+      apiClient.get("/email-logs", listParams({ search, status, category, page, perPage })),
     );
   },
 };

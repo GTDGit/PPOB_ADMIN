@@ -43,6 +43,15 @@ const labelMap: Record<string, string> = {
   sent: "Terkirim",
   read: "Dibaca",
   delivered: "Terkirim",
+  bounced: "Bounce",
+  complaint: "Komplain",
+  belum: "Belum",
+  dibalas: "Dibalas",
+  arsip: "Arsip",
+  selesai: "Selesai",
+  shared: "Shared",
+  personal: "Personal",
+  system: "Sistem",
 };
 
 const acronymMap: Record<string, string> = {

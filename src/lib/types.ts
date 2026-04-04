@@ -107,6 +107,49 @@ export interface AuthStateSnapshot {
   user: AdminUserSummary;
 }
 
+export interface AdminMailbox {
+  id: string;
+  type: "system" | "shared" | "personal";
+  address: string;
+  displayName: string;
+  ownerAdminId?: string | null;
+  ownerName?: string | null;
+  isActive: boolean;
+  unreadThreads?: number;
+  totalThreads?: number;
+  latestMessageAt?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  section?: "my" | "personal" | "shared" | "system";
+  members?: GenericRecord[];
+}
+
+export interface MailboxCollectionPayload {
+  items: AdminMailbox[];
+  myMailboxes: AdminMailbox[];
+  sharedMailboxes: AdminMailbox[];
+  systemMailboxes: AdminMailbox[];
+}
+
+export interface MailboxThreadsPayload {
+  mailbox: GenericRecord;
+  list: PaginatedResponse<GenericRecord>;
+  canReply: boolean;
+  canAssign: boolean;
+  canManageStatus: boolean;
+}
+
+export interface ThreadDetailPayload {
+  thread: GenericRecord;
+  mailbox: GenericRecord;
+  messages: GenericRecord[];
+  attachments: GenericRecord[];
+  members: GenericRecord[];
+  canReply: boolean;
+  canAssign: boolean;
+  canSetStatus: boolean;
+}
+
 export interface NavigationItem {
   label: string;
   href: string;
