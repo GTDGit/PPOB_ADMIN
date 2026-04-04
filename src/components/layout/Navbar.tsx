@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { BellDot, Menu, ShieldCheck } from "lucide-react";
-import { titleCase } from "@/lib/format";
+import { prettifyResourceLabel, titleCase } from "@/lib/format";
 import { useAuth } from "@/lib/auth/AuthProvider";
 
 const labelMap: Record<string, string> = {
@@ -12,16 +12,16 @@ const labelMap: Record<string, string> = {
   roles: "Role & Permissions",
   customers: "Pelanggan",
   transactions: "Transaksi",
-  deposits: "Deposits",
+  deposits: "Deposit",
   qris: "QRIS",
   vouchers: "Voucher",
   catalog: "Produk & Layanan",
   pricing: "Pricing",
   kyc: "KYC",
   content: "Konten & Notifikasi",
-  approvals: "Approval Queue",
-  "audit-logs": "Audit Logs",
-  "reference-data": "Reference Data",
+  approvals: "Antrian Persetujuan",
+  "audit-logs": "Audit Log",
+  "reference-data": "Data Referensi",
   settings: "Pengaturan",
 };
 
@@ -65,8 +65,16 @@ export function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
         day: "2-digit",
         month: "long",
         year: "numeric",
+        timeZone: "Asia/Jakarta",
       }).format(new Date()),
     [],
+  );
+  const roleLabel = useMemo(
+    () =>
+      (user?.roles || []).length > 0
+        ? (user?.roles || []).map((role) => prettifyResourceLabel(role)).join(" · ")
+        : "Admin",
+    [user?.roles],
   );
 
   return (
@@ -81,7 +89,7 @@ export function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
             <Menu className="h-5 w-5" />
           </button>
           <div>
-            <p className="text-sm font-medium text-blue-600">PPOB.ID Console</p>
+            <p className="text-sm font-medium text-blue-600">PPOB.ID Console Admin</p>
             <h2 className="text-2xl font-semibold text-slate-950">{title}</h2>
             <p className="mt-1 max-w-2xl text-sm text-slate-500">{description}</p>
           </div>
@@ -97,7 +105,7 @@ export function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
           </div>
           <div className="hidden rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600 md:flex md:items-center md:gap-2">
             <ShieldCheck className="h-4 w-4 text-blue-600" />
-            <span>{(user?.roles || []).join(", ") || "Admin"}</span>
+            <span>{roleLabel}</span>
           </div>
           <button className="rounded-2xl border border-slate-200 bg-white p-3 text-slate-500 shadow-sm transition hover:border-blue-200 hover:text-blue-600">
             <BellDot className="h-5 w-5" />

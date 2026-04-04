@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { adminApi } from "@/lib/api/admin";
 import { extractApiError } from "@/lib/api/client";
-import { formatDateTime } from "@/lib/format";
+import { formatDateTime, prettifyResourceLabel } from "@/lib/format";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { Panel } from "@/components/admin/Panel";
@@ -145,7 +145,12 @@ export default function AdminsPage() {
       {
         key: "roles",
         header: "Role",
-        render: (row) => String(row.roles || "-"),
+        render: (row) =>
+          String(row.roles || "")
+            .split(",")
+            .map((role) => prettifyResourceLabel(role.trim()))
+            .filter(Boolean)
+            .join(", ") || "-",
       },
       {
         key: "status",
@@ -172,19 +177,19 @@ export default function AdminsPage() {
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => void openDetail(String(row.id))}
-                className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+                className="admin-chip-button"
               >
                 Detail
               </button>
               <button
                 onClick={() => void handleStatus(row, "active", true)}
-                className="rounded-2xl border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-700"
+                className="admin-button-success"
               >
                 Aktifkan
               </button>
               <button
                 onClick={() => void handleStatus(row, "disabled", false)}
-                className="rounded-2xl border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700"
+                className="admin-button-danger"
               >
                 Nonaktifkan
               </button>
@@ -193,7 +198,7 @@ export default function AdminsPage() {
             <button
               type="button"
               onClick={() => void openDetail(String(row.id))}
-              className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+              className="admin-chip-button"
             >
               Detail
             </button>
@@ -216,12 +221,12 @@ export default function AdminsPage() {
       />
 
       {error ? (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        <div className="admin-note-error">
           {error}
         </div>
       ) : null}
       {success ? (
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+        <div className="admin-note-success">
           {success}
         </div>
       ) : null}
@@ -238,7 +243,7 @@ export default function AdminsPage() {
               onChange={(event) =>
                 setInviteForm((current) => ({ ...current, email: event.target.value }))
               }
-              className="rounded-2xl border border-slate-200 px-4 py-3"
+              className="admin-input"
               required
             />
             <input
@@ -247,7 +252,7 @@ export default function AdminsPage() {
               onChange={(event) =>
                 setInviteForm((current) => ({ ...current, phone: event.target.value }))
               }
-              className="rounded-2xl border border-slate-200 px-4 py-3"
+              className="admin-input"
               required
             />
             <input
@@ -256,14 +261,14 @@ export default function AdminsPage() {
               onChange={(event) =>
                 setInviteForm((current) => ({ ...current, fullName: event.target.value }))
               }
-              className="rounded-2xl border border-slate-200 px-4 py-3"
+              className="admin-input"
             />
             <select
               value={inviteForm.roleId}
               onChange={(event) =>
                 setInviteForm((current) => ({ ...current, roleId: event.target.value }))
               }
-              className="rounded-2xl border border-slate-200 px-4 py-3"
+              className="admin-input"
               required
             >
               {roles.map((role) => (
@@ -276,7 +281,7 @@ export default function AdminsPage() {
               <button
                 type="submit"
                 disabled={actionLoading}
-                className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white"
+                className="admin-button-primary"
               >
                 {actionLoading ? "Mengirim undangan..." : "Kirim undangan admin"}
               </button>
@@ -295,9 +300,9 @@ export default function AdminsPage() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Cari admin..."
-            className="w-full rounded-2xl border border-slate-200 px-4 py-3"
+            className="admin-input"
           />
-          <button className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white">
+          <button className="admin-button-primary">
             Cari
           </button>
         </form>

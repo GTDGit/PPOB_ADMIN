@@ -3,7 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { adminApi } from "@/lib/api/admin";
 import { extractApiError } from "@/lib/api/client";
-import { formatDateTime, stringifyValue } from "@/lib/format";
+import {
+  formatDateTime,
+  prettifyAuditAction,
+  prettifyResourceLabel,
+  stringifyValue,
+} from "@/lib/format";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { Panel } from "@/components/admin/Panel";
@@ -42,10 +47,12 @@ export default function ApprovalsPage() {
     () => [
       {
         key: "request",
-        header: "Request",
+        header: "Permintaan",
         render: (row) => (
           <div>
-            <p className="font-semibold text-slate-900">{String(row.request_type || "-")}</p>
+            <p className="font-semibold text-slate-900">
+              {prettifyAuditAction(String(row.request_type || ""))}
+            </p>
             <p className="mt-1 text-xs text-slate-500">
               {String(row.requester_name || "-")}
             </p>
@@ -54,10 +61,12 @@ export default function ApprovalsPage() {
       },
       {
         key: "resource",
-        header: "Resource",
+        header: "Objek",
         render: (row) => (
           <div>
-            <p className="font-medium text-slate-900">{String(row.resource_type || "-")}</p>
+            <p className="font-medium text-slate-900">
+              {prettifyResourceLabel(String(row.resource_type || ""))}
+            </p>
             <p className="mt-1 text-xs text-slate-500">{String(row.resource_id || "-")}</p>
           </div>
         ),
@@ -97,9 +106,9 @@ export default function ApprovalsPage() {
                     })
                     .catch((error) => setError(extractApiError(error)))
                 }
-                className="rounded-2xl bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white"
+                className="admin-button-success"
               >
-                Approve
+                Setujui
               </button>
               <button
                 onClick={() => {
@@ -113,9 +122,9 @@ export default function ApprovalsPage() {
                     })
                     .catch((error) => setError(extractApiError(error)));
                 }}
-                className="rounded-2xl border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700"
+                className="admin-button-danger"
               >
-                Reject
+                Tolak
               </button>
             </div>
           ) : (
@@ -131,18 +140,18 @@ export default function ApprovalsPage() {
   return (
     <div className="space-y-6">
       <PageHeader eyebrow="Approvals" title="Approval queue" description="Single approval dan maker-checker request yang menunggu tindakan admin." />
-      {error ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
-      {success ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div> : null}
+      {error ? <div className="admin-note-error">{error}</div> : null}
+      {success ? <div className="admin-note-success">{success}</div> : null}
       <Panel title="Daftar approval" description="Filter request approval berdasarkan status workflow.">
         <form className="mb-5 flex flex-col gap-3 sm:flex-row" onSubmit={(e) => { e.preventDefault(); setPage(1); void load(); }}>
-          <select value={status} onChange={(e) => setStatus(e.target.value)} className="rounded-2xl border border-slate-200 px-4 py-3">
+          <select value={status} onChange={(e) => setStatus(e.target.value)} className="admin-input">
             <option value="all">Semua status</option>
             <option value="pending">Pending</option>
             <option value="approved">Approved</option>
             <option value="applied">Applied</option>
             <option value="rejected">Rejected</option>
           </select>
-          <button className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white">Terapkan</button>
+          <button className="admin-button-primary">Terapkan</button>
         </form>
         <AdminTable columns={columns} rows={data?.items || []} />
         <Pagination page={data?.page || page} hasNext={Boolean(data?.hasNext)} onPrevious={() => setPage((current) => Math.max(1, current - 1))} onNext={() => setPage((current) => current + 1)} />

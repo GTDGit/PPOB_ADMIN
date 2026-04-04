@@ -129,11 +129,7 @@ function ActivatePageContent() {
       ]}
     >
 
-        {error ? (
-          <div className="mt-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-            {error}
-          </div>
-        ) : null}
+        {error ? <div className="admin-note-error mt-6">{error}</div> : null}
 
         {loading ? (
           <div className="auth-muted-card mt-8 px-6 py-16 text-center text-sm text-slate-500">
@@ -186,7 +182,7 @@ function ActivatePageContent() {
                 <input
                   value={fullName}
                   onChange={(event) => setFullName(event.target.value)}
-                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                  className="admin-input"
                   required
                 />
               </div>
@@ -199,14 +195,14 @@ function ActivatePageContent() {
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   placeholder="Minimal 8 karakter"
-                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                  className="admin-input"
                   required
                 />
               </div>
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full rounded-2xl bg-blue-600 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="admin-button-primary w-full disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {submitting ? "Menyiapkan authenticator..." : "Lanjut setup authenticator"}
               </button>
@@ -291,13 +287,13 @@ function ActivatePageContent() {
                     setTotpCode(event.target.value.replace(/\D/g, "").slice(0, 6))
                   }
                   placeholder="6 digit"
-                  className="mt-5 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 tracking-[0.35em] outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                  className="admin-input mt-5 tracking-[0.35em]"
                   required
                 />
                 <button
                   type="submit"
                   disabled={confirming}
-                  className="mt-5 w-full rounded-2xl bg-blue-600 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="admin-button-primary mt-5 w-full disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {confirming ? "Mengaktifkan akun admin..." : "Aktifkan console admin"}
                 </button>

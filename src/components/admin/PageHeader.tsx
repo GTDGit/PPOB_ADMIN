@@ -12,9 +12,10 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="surface-solid overflow-hidden p-6 lg:p-7">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
+    <div className="surface-solid relative overflow-hidden p-6 lg:p-7">
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-[radial-gradient(circle_at_top_right,rgba(191,219,254,0.7),transparent_60%)]" />
+      <div className="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="max-w-3xl">
           {eyebrow ? (
             <p className="inline-flex rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">
               {eyebrow}
@@ -29,7 +30,11 @@ export function PageHeader({
             </p>
           ) : null}
         </div>
-        {actions ? <div className="flex flex-wrap gap-3">{actions}</div> : null}
+        {actions ? (
+          <div className="flex flex-wrap gap-3 rounded-[1.4rem] border border-slate-200/80 bg-white/90 p-2 shadow-sm">
+            {actions}
+          </div>
+        ) : null}
       </div>
     </div>
   );

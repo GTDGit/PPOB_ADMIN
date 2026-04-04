@@ -39,7 +39,7 @@ export function AdminAuthShell({
         <div className="grid gap-6 xl:grid-cols-[0.92fr,1.08fr] xl:items-center">
           <aside className="hidden xl:block">
             <div className="surface-solid overflow-hidden p-8">
-              <AdminBrand size="lg" />
+              <AdminBrand size="lg" subtitle="Console Admin" />
 
               <div className="mt-10 max-w-xl">
                 <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">

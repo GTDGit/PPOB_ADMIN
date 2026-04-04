@@ -1,13 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { adminApi } from "@/lib/api/admin";
 import { extractApiError } from "@/lib/api/client";
-import { formatDateTime } from "@/lib/format";
+import {
+  formatDateTime,
+  prettifyAuditAction,
+  prettifyResourceLabel,
+} from "@/lib/format";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { Panel } from "@/components/admin/Panel";
 import { AdminTable, type TableColumn } from "@/components/admin/AdminTable";
+import { DetailDrawer } from "@/components/admin/DetailDrawer";
+import { ExportCsvButton } from "@/components/admin/ExportCsvButton";
 import { Pagination } from "@/components/admin/Pagination";
 import { PermissionFallback } from "@/components/admin/PermissionFallback";
 import { StatusBadge } from "@/components/admin/StatusBadge";
@@ -17,6 +23,8 @@ export default function AuditLogsPage() {
   const { hasPermission } = useAuth();
   const [page, setPage] = useState(1);
   const [data, setData] = useState<PaginatedResponse<GenericRecord> | null>(null);
+  const [selectedDetail, setSelectedDetail] = useState<GenericRecord | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const [error, setError] = useState("");
 
   const canView = hasPermission("audit.view");
@@ -34,21 +42,36 @@ export default function AuditLogsPage() {
     void load();
   }, [canView, page]);
 
+  const openDetail = useCallback((row: GenericRecord) => {
+    setSelectedDetail(row);
+    setDetailOpen(true);
+  }, []);
+
   const columns = useMemo<TableColumn<GenericRecord>[]>(
     () => [
       {
         key: "admin",
         header: "Admin",
-        render: (row) => String(row.admin_name || "-"),
+        render: (row) => (
+          <div>
+            <p className="font-semibold text-slate-900">
+              {String(row.admin_name || row.admin_email || "-")}
+            </p>
+            <p className="mt-1 text-xs text-slate-500">{String(row.admin_email || "-")}</p>
+          </div>
+        ),
       },
       {
         key: "action",
-        header: "Action",
+        header: "Aktivitas",
         render: (row) => (
           <div>
-            <p className="font-semibold text-slate-900">{String(row.action || "-")}</p>
+            <p className="font-semibold text-slate-900">
+              {prettifyAuditAction(String(row.action || ""))}
+            </p>
             <p className="mt-1 text-xs text-slate-500">
-              {String(row.resource_type || "-")} · {String(row.resource_id || "-")}
+              {prettifyResourceLabel(String(row.resource_type || ""))} -{" "}
+              {String(row.resource_id || "-")}
             </p>
           </div>
         ),
@@ -60,7 +83,7 @@ export default function AuditLogsPage() {
       },
       {
         key: "ip",
-        header: "IP / Agent",
+        header: "Konteks",
         render: (row) => (
           <div className="text-xs text-slate-500">
             <p>{String(row.ip_address || "-")}</p>
@@ -73,20 +96,46 @@ export default function AuditLogsPage() {
         header: "Waktu",
         render: (row) => formatDateTime(row.created_at as string),
       },
+      {
+        key: "detail",
+        header: "Detail",
+        render: (row) => (
+          <button
+            type="button"
+            onClick={() => openDetail(row)}
+            className="admin-chip-button"
+          >
+            Lihat detail
+          </button>
+        ),
+      },
     ],
-    [],
+    [openDetail],
   );
 
   if (!canView) return <PermissionFallback />;
 
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow="Audit Trail" title="Audit log admin" description="Seluruh aktivitas admin, perubahan status, dan event approval yang tercatat di backend." />
-      {error ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
-      <Panel title="Log aktivitas" description="Log audit tersimpan untuk keperluan operasional, keamanan, dan investigasi.">
+      <PageHeader eyebrow="Audit Trail" title="Audit log admin" description="Seluruh aktivitas admin, perubahan status, dan event approval ditampilkan dengan format yang lebih mudah dibaca tim operasional." />
+      {error ? <div className="admin-note-error">{error}</div> : null}
+      <Panel
+        title="Log aktivitas"
+        description="Pantau siapa melakukan apa, pada modul mana, dari perangkat mana, dan kapan aksi itu terjadi."
+        action={<ExportCsvButton rows={data?.items || []} filename="audit-logs" />}
+      >
         <AdminTable columns={columns} rows={data?.items || []} />
         <Pagination page={data?.page || page} hasNext={Boolean(data?.hasNext)} onPrevious={() => setPage((current) => Math.max(1, current - 1))} onNext={() => setPage((current) => current + 1)} />
       </Panel>
+      <DetailDrawer
+        open={detailOpen}
+        title="Detail audit log"
+        data={selectedDetail}
+        onClose={() => {
+          setDetailOpen(false);
+          setSelectedDetail(null);
+        }}
+      />
     </div>
   );
 }

@@ -107,7 +107,7 @@ export default function TransactionsPage() {
           <button
             type="button"
             onClick={() => void openDetail(String(row.id))}
-            className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+            className="admin-chip-button"
           >
             Lihat detail
           </button>
@@ -127,7 +127,7 @@ export default function TransactionsPage() {
         description="Pantau transaksi user berdasarkan status, produk, dan target transaksi."
       />
       {error ? (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        <div className="admin-note-error">
           {error}
         </div>
       ) : null}
@@ -148,19 +148,19 @@ export default function TransactionsPage() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Cari ID transaksi, nama user, nomor, produk..."
-            className="rounded-2xl border border-slate-200 px-4 py-3"
+            className="admin-input"
           />
           <select
             value={status}
             onChange={(event) => setStatus(event.target.value)}
-            className="rounded-2xl border border-slate-200 px-4 py-3"
+            className="admin-input"
           >
             <option value="all">Semua status</option>
             <option value="success">Success</option>
             <option value="pending">Pending</option>
             <option value="failed">Failed</option>
           </select>
-          <button className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white">
+          <button className="admin-button-primary">
             Terapkan
           </button>
         </form>

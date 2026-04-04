@@ -157,13 +157,13 @@ export default function VouchersPage() {
               <button
                 type="button"
                 onClick={() => void openDetail(String(row.id))}
-                className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+                className="admin-chip-button"
               >
                 Detail
               </button>
               <button
                 onClick={() => void toggleVoucher(row)}
-                className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+                className="admin-chip-button"
               >
                 {Boolean(row.is_active) ? "Nonaktifkan" : "Aktifkan"}
               </button>
@@ -172,7 +172,7 @@ export default function VouchersPage() {
             <button
               type="button"
               onClick={() => void openDetail(String(row.id))}
-              className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+              className="admin-chip-button"
             >
               Detail
             </button>
@@ -191,28 +191,28 @@ export default function VouchersPage() {
         title="Voucher promosi"
         description="Kelola voucher diskon, masa berlaku, dan status aktif voucher."
       />
-      {error ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
-      {success ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div> : null}
+      {error ? <div className="admin-note-error">{error}</div> : null}
+      {success ? <div className="admin-note-success">{success}</div> : null}
       {canManage ? (
         <Panel title="Buat voucher baru" description="Form singkat untuk membuat voucher promosi operasional.">
           <form className="grid gap-4 md:grid-cols-2 xl:grid-cols-4" onSubmit={createVoucher}>
-            <input value={form.code} onChange={(e) => setForm((f) => ({ ...f, code: e.target.value }))} placeholder="Kode voucher" className="rounded-2xl border border-slate-200 px-4 py-3" required />
-            <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Nama voucher" className="rounded-2xl border border-slate-200 px-4 py-3" required />
-            <input value={form.discountValue} onChange={(e) => setForm((f) => ({ ...f, discountValue: Number(e.target.value) }))} placeholder="Nilai diskon" type="number" className="rounded-2xl border border-slate-200 px-4 py-3" required />
-            <select value={form.discountType} onChange={(e) => setForm((f) => ({ ...f, discountType: e.target.value }))} className="rounded-2xl border border-slate-200 px-4 py-3">
+            <input value={form.code} onChange={(e) => setForm((f) => ({ ...f, code: e.target.value }))} placeholder="Kode voucher" className="admin-input" required />
+            <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Nama voucher" className="admin-input" required />
+            <input value={form.discountValue} onChange={(e) => setForm((f) => ({ ...f, discountValue: Number(e.target.value) }))} placeholder="Nilai diskon" type="number" className="admin-input" required />
+            <select value={form.discountType} onChange={(e) => setForm((f) => ({ ...f, discountType: e.target.value }))} className="admin-input">
               <option value="fixed">Fixed</option>
               <option value="percentage">Percentage</option>
             </select>
-            <input value={form.minTransaction} onChange={(e) => setForm((f) => ({ ...f, minTransaction: Number(e.target.value) }))} placeholder="Min transaksi" type="number" className="rounded-2xl border border-slate-200 px-4 py-3" />
-            <input value={form.maxDiscount} onChange={(e) => setForm((f) => ({ ...f, maxDiscount: Number(e.target.value) }))} placeholder="Max diskon" type="number" className="rounded-2xl border border-slate-200 px-4 py-3" />
-            <input value={form.maxUsage} onChange={(e) => setForm((f) => ({ ...f, maxUsage: Number(e.target.value) }))} placeholder="Max usage" type="number" className="rounded-2xl border border-slate-200 px-4 py-3" />
-            <input value={form.maxUsagePerUser} onChange={(e) => setForm((f) => ({ ...f, maxUsagePerUser: Number(e.target.value) }))} placeholder="Max usage per user" type="number" className="rounded-2xl border border-slate-200 px-4 py-3" />
-            <input value={form.startsAt} onChange={(e) => setForm((f) => ({ ...f, startsAt: e.target.value }))} type="datetime-local" className="rounded-2xl border border-slate-200 px-4 py-3" required />
-            <input value={form.expiresAt} onChange={(e) => setForm((f) => ({ ...f, expiresAt: e.target.value }))} type="datetime-local" className="rounded-2xl border border-slate-200 px-4 py-3" required />
-            <input value={form.termsUrl} onChange={(e) => setForm((f) => ({ ...f, termsUrl: e.target.value }))} placeholder="URL syarat" className="rounded-2xl border border-slate-200 px-4 py-3 md:col-span-2" />
-            <textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Deskripsi voucher" className="rounded-2xl border border-slate-200 px-4 py-3 md:col-span-2 xl:col-span-4" rows={3} />
+            <input value={form.minTransaction} onChange={(e) => setForm((f) => ({ ...f, minTransaction: Number(e.target.value) }))} placeholder="Min transaksi" type="number" className="admin-input" />
+            <input value={form.maxDiscount} onChange={(e) => setForm((f) => ({ ...f, maxDiscount: Number(e.target.value) }))} placeholder="Max diskon" type="number" className="admin-input" />
+            <input value={form.maxUsage} onChange={(e) => setForm((f) => ({ ...f, maxUsage: Number(e.target.value) }))} placeholder="Max usage" type="number" className="admin-input" />
+            <input value={form.maxUsagePerUser} onChange={(e) => setForm((f) => ({ ...f, maxUsagePerUser: Number(e.target.value) }))} placeholder="Max usage per user" type="number" className="admin-input" />
+            <input value={form.startsAt} onChange={(e) => setForm((f) => ({ ...f, startsAt: e.target.value }))} type="datetime-local" className="admin-input" required />
+            <input value={form.expiresAt} onChange={(e) => setForm((f) => ({ ...f, expiresAt: e.target.value }))} type="datetime-local" className="admin-input" required />
+            <input value={form.termsUrl} onChange={(e) => setForm((f) => ({ ...f, termsUrl: e.target.value }))} placeholder="URL syarat" className="admin-input md:col-span-2" />
+            <textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Deskripsi voucher" className="admin-textarea md:col-span-2 xl:col-span-4" rows={3} />
             <div className="md:col-span-2 xl:col-span-4">
-              <button className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white">Buat voucher</button>
+              <button className="admin-button-primary">Buat voucher</button>
             </div>
           </form>
         </Panel>
@@ -223,8 +223,8 @@ export default function VouchersPage() {
         action={<ExportCsvButton rows={data?.items || []} filename="vouchers" />}
       >
         <form className="mb-5 flex flex-col gap-3 sm:flex-row" onSubmit={(e) => { e.preventDefault(); setPage(1); void load(); }}>
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cari voucher..." className="w-full rounded-2xl border border-slate-200 px-4 py-3" />
-          <button className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white">Cari</button>
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cari voucher..." className="admin-input" />
+          <button className="admin-button-primary">Cari</button>
         </form>
         <AdminTable columns={columns} rows={data?.items || []} />
         <Pagination page={data?.page || page} hasNext={Boolean(data?.hasNext)} onPrevious={() => setPage((current) => Math.max(1, current - 1))} onNext={() => setPage((current) => current + 1)} />

@@ -12,7 +12,7 @@ export function StatCard({
   icon?: ReactNode;
 }) {
   return (
-    <div className="surface-solid overflow-hidden p-6">
+    <div className="surface-solid overflow-hidden bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,251,255,0.98))] p-6">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-medium text-slate-500">{label}</p>
@@ -22,7 +22,7 @@ export function StatCard({
           ) : null}
         </div>
         {icon ? (
-          <div className="rounded-2xl border border-blue-100 bg-blue-50 p-3 text-blue-600 shadow-sm">
+          <div className="rounded-2xl border border-blue-100 bg-[linear-gradient(135deg,#eff6ff,#dbeafe)] p-3 text-blue-600 shadow-sm">
             {icon}
           </div>
         ) : null}

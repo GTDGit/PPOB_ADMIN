@@ -35,16 +35,8 @@ export default function ForgotPasswordPage() {
       description="Masukkan email admin Anda. Jika terdaftar, kami akan mengirimkan link reset password ke email tersebut."
     >
       <form className="space-y-5" onSubmit={handleSubmit}>
-        {error ? (
-          <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-            {error}
-          </div>
-        ) : null}
-        {success ? (
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-            {success}
-          </div>
-        ) : null}
+        {error ? <div className="admin-note-error">{error}</div> : null}
+        {success ? <div className="admin-note-success">{success}</div> : null}
 
         <div>
           <label className="mb-2 block text-sm font-medium text-slate-700">
@@ -55,7 +47,7 @@ export default function ForgotPasswordPage() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="riko@gtd.co.id"
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+            className="admin-input"
             required
           />
         </div>
@@ -63,7 +55,7 @@ export default function ForgotPasswordPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-2xl bg-blue-600 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="admin-button-primary w-full disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? "Mengirim link reset..." : "Kirim link reset"}
         </button>

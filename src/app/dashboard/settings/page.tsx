@@ -62,16 +62,16 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <PageHeader eyebrow="Settings" title="System settings" description="Konfigurasi admin level console untuk approval, security, dan operasional." />
-      {error ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
-      {success ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div> : null}
+      {error ? <div className="admin-note-error">{error}</div> : null}
+      {success ? <div className="admin-note-success">{success}</div> : null}
       {canManage ? (
         <Panel title="Update setting" description="Masukkan key dan JSON value untuk menambah atau mengubah setting admin.">
           <form className="grid gap-4 lg:grid-cols-2" onSubmit={submit}>
-            <input value={keyName} onChange={(e) => setKeyName(e.target.value)} placeholder="setting.key" className="rounded-2xl border border-slate-200 px-4 py-3" required />
-            <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Deskripsi setting" className="rounded-2xl border border-slate-200 px-4 py-3" />
-            <textarea value={value} onChange={(e) => setValue(e.target.value)} placeholder='{"enabled": true}' className="rounded-2xl border border-slate-200 px-4 py-3 lg:col-span-2" rows={6} required />
+            <input value={keyName} onChange={(e) => setKeyName(e.target.value)} placeholder="setting.key" className="admin-input" required />
+            <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Deskripsi setting" className="admin-input" />
+            <textarea value={value} onChange={(e) => setValue(e.target.value)} placeholder='{"enabled": true}' className="admin-textarea lg:col-span-2" rows={6} required />
             <div className="lg:col-span-2">
-              <button className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white">Simpan setting</button>
+              <button className="admin-button-primary">Simpan setting</button>
             </div>
           </form>
         </Panel>

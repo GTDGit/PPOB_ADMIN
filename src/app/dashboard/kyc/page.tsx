@@ -123,7 +123,7 @@ export default function KycPage() {
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => void openDetail(String(row.user_id))}
-                className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+                className="admin-chip-button"
               >
                 Detail
               </button>
@@ -135,7 +135,7 @@ export default function KycPage() {
               </button>
               <button
                 onClick={() => void act("reject", String(row.user_id))}
-                className="rounded-2xl border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700"
+                className="admin-button-danger"
               >
                 Reject
               </button>
@@ -144,7 +144,7 @@ export default function KycPage() {
             <button
               type="button"
               onClick={() => void openDetail(String(row.user_id))}
-              className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+              className="admin-chip-button"
             >
               Detail
             </button>
@@ -159,22 +159,22 @@ export default function KycPage() {
   return (
     <div className="space-y-6">
       <PageHeader eyebrow="KYC" title="Review verifikasi identitas" description="Pantau status verifikasi user dan proses approve/reject dokumen KYC." />
-      {error ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
-      {success ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div> : null}
+      {error ? <div className="admin-note-error">{error}</div> : null}
+      {success ? <div className="admin-note-success">{success}</div> : null}
       <Panel
         title="Daftar KYC"
         description="Filter berdasarkan nama, nomor, email, NIK, atau status KYC."
         action={<ExportCsvButton rows={data?.items || []} filename="kyc" />}
       >
         <form className="mb-5 grid gap-3 md:grid-cols-[1fr,220px,auto]" onSubmit={(e) => { e.preventDefault(); setPage(1); void load(); }}>
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cari KYC..." className="rounded-2xl border border-slate-200 px-4 py-3" />
-          <select value={status} onChange={(e) => setStatus(e.target.value)} className="rounded-2xl border border-slate-200 px-4 py-3">
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cari KYC..." className="admin-input" />
+          <select value={status} onChange={(e) => setStatus(e.target.value)} className="admin-input">
             <option value="all">Semua status</option>
             <option value="pending">Pending</option>
             <option value="verified">Verified</option>
             <option value="rejected">Rejected</option>
           </select>
-          <button className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white">Terapkan</button>
+          <button className="admin-button-primary">Terapkan</button>
         </form>
         <AdminTable columns={columns} rows={data?.items || []} />
         <Pagination page={data?.page || page} hasNext={Boolean(data?.hasNext)} onPrevious={() => setPage((current) => Math.max(1, current - 1))} onNext={() => setPage((current) => current + 1)} />

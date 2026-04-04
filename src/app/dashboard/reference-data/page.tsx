@@ -34,7 +34,7 @@ export default function ReferenceDataPage() {
   return (
     <div className="space-y-6">
       <PageHeader eyebrow="Reference" title="Reference data" description="Snapshot data referensi backend seperti operator, bank, e-wallet, dan provider TV." />
-      {error ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
+      {error ? <div className="admin-note-error">{error}</div> : null}
       <div className="grid gap-6 lg:grid-cols-2">
         {Object.entries(data).map(([key, items]) => (
           <Panel key={key} title={key} description={`Total ${items.length} data`}>

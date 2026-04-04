@@ -67,11 +67,11 @@ export default function PricingPage() {
         title="Request perubahan pricing"
         description="Perubahan harga jual tidak langsung diterapkan. Semua perubahan akan masuk approval queue."
       />
-      {error ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
-      {success ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div> : null}
+      {error ? <div className="admin-note-error">{error}</div> : null}
+      {success ? <div className="admin-note-success">{success}</div> : null}
       <Panel title="Buat request pricing" description="Pilih produk, isi harga baru, lalu jelaskan alasan perubahan.">
         <form className="grid gap-4 lg:grid-cols-2" onSubmit={submit}>
-          <select value={productId} onChange={(e) => setProductId(e.target.value)} className="rounded-2xl border border-slate-200 px-4 py-3" required>
+          <select value={productId} onChange={(e) => setProductId(e.target.value)} className="admin-input" required>
             {products.map((product) => (
               <option key={String(product.id)} value={String(product.id)}>
                 {String(product.name || "-")}
@@ -79,13 +79,13 @@ export default function PricingPage() {
             ))}
           </select>
           <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            Harga saat ini: <span className="font-semibold text-slate-900">{formatCurrency(selected?.price as number)}</span> · Admin fee: <span className="font-semibold text-slate-900">{formatCurrency(selected?.admin_fee as number)}</span>
+            Harga saat ini: <span className="font-semibold text-slate-900">{formatCurrency(selected?.price as number)}</span> Â· Admin fee: <span className="font-semibold text-slate-900">{formatCurrency(selected?.admin_fee as number)}</span>
           </div>
-          <input value={newPrice} onChange={(e) => setNewPrice(e.target.value)} type="number" placeholder="Harga baru" className="rounded-2xl border border-slate-200 px-4 py-3" required />
-          <input value={newAdminFee} onChange={(e) => setNewAdminFee(e.target.value)} type="number" placeholder="Admin fee baru" className="rounded-2xl border border-slate-200 px-4 py-3" />
-          <textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Alasan perubahan pricing" className="rounded-2xl border border-slate-200 px-4 py-3 lg:col-span-2" rows={4} required />
+          <input value={newPrice} onChange={(e) => setNewPrice(e.target.value)} type="number" placeholder="Harga baru" className="admin-input" required />
+          <input value={newAdminFee} onChange={(e) => setNewAdminFee(e.target.value)} type="number" placeholder="Admin fee baru" className="admin-input" />
+          <textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Alasan perubahan pricing" className="admin-textarea lg:col-span-2" rows={4} required />
           <div className="lg:col-span-2">
-            <button className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white">Kirim request pricing</button>
+            <button className="admin-button-primary">Kirim request pricing</button>
           </div>
         </form>
       </Panel>

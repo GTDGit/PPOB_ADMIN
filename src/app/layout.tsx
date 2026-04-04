@@ -6,6 +6,9 @@ import { APP_NAME } from "@/lib/config";
 export const metadata: Metadata = {
   title: APP_NAME,
   description: "Console admin operasional PPOB.ID",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

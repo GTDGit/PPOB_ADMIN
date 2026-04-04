@@ -99,14 +99,10 @@ function ResetPasswordContent() {
 
       <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
         {error ? (
-          <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-            {error}
-          </div>
+          <div className="admin-note-error">{error}</div>
         ) : null}
         {success ? (
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-            {success}
-          </div>
+          <div className="admin-note-success">{success}</div>
         ) : null}
 
         <div className="grid gap-5 md:grid-cols-2">
@@ -119,7 +115,7 @@ function ResetPasswordContent() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder="Minimal 8 karakter"
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+              className="admin-input"
               required
               disabled={!preview || Boolean(success)}
             />
@@ -134,7 +130,7 @@ function ResetPasswordContent() {
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
               placeholder="Ulangi password baru"
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+              className="admin-input"
               required
               disabled={!preview || Boolean(success)}
             />
@@ -151,7 +147,7 @@ function ResetPasswordContent() {
                 setTotpCode(event.target.value.replace(/\D/g, "").slice(0, 6))
               }
               placeholder="6 digit"
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 tracking-[0.25em] outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+              className="admin-input tracking-[0.25em]"
               disabled={!preview || Boolean(success)}
             />
           </div>
@@ -164,7 +160,7 @@ function ResetPasswordContent() {
               value={recoveryCode}
               onChange={(event) => setRecoveryCode(event.target.value.toUpperCase())}
               placeholder="Gunakan jika authenticator tidak tersedia"
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 uppercase outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+              className="admin-input uppercase"
               disabled={!preview || Boolean(success)}
             />
             <p className="mt-2 text-xs leading-5 text-slate-500">
@@ -176,7 +172,7 @@ function ResetPasswordContent() {
         <button
           type="submit"
           disabled={loading || !preview || Boolean(success)}
-          className="w-full rounded-2xl bg-blue-600 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="admin-button-primary w-full disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? "Memperbarui password..." : "Simpan password baru"}
         </button>

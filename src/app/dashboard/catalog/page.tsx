@@ -47,7 +47,7 @@ export default function CatalogPage() {
           <div>
             <p className="font-semibold text-slate-900">{String(row.name || "-")}</p>
             <p className="mt-1 text-xs text-slate-500">
-              {String(row.service_type || "-")} · {String(row.category || "-")}
+              {String(row.service_type || "-")} Â· {String(row.category || "-")}
             </p>
           </div>
         ),
@@ -92,7 +92,7 @@ export default function CatalogPage() {
         title="Produk & layanan"
         description="Pantau layanan utama dan produk PPOB yang sedang aktif di sistem."
       />
-      {error ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
+      {error ? <div className="admin-note-error">{error}</div> : null}
       <Panel title="Layanan utama" description="Service master yang dipakai oleh mobile app dan transaksi backend.">
         <div className="flex flex-wrap gap-3">
           {services.map((service) => (
@@ -105,8 +105,8 @@ export default function CatalogPage() {
       </Panel>
       <Panel title="Produk" description="Produk yang bisa dicari dan menjadi dasar request pricing change.">
         <form className="mb-5 flex flex-col gap-3 sm:flex-row" onSubmit={(e) => { e.preventDefault(); setPage(1); void load(); }}>
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cari produk..." className="w-full rounded-2xl border border-slate-200 px-4 py-3" />
-          <button className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white">Cari</button>
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cari produk..." className="admin-input" />
+          <button className="admin-button-primary">Cari</button>
         </form>
         <AdminTable columns={columns} rows={products?.items || []} />
         <Pagination page={products?.page || page} hasNext={Boolean(products?.hasNext)} onPrevious={() => setPage((current) => Math.max(1, current - 1))} onNext={() => setPage((current) => current + 1)} />

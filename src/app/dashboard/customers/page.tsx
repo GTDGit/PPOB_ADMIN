@@ -100,7 +100,7 @@ export default function CustomersPage() {
           <button
             type="button"
             onClick={() => void openDetail(String(row.id))}
-            className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+            className="admin-chip-button"
           >
             Lihat detail
           </button>
@@ -122,7 +122,7 @@ export default function CustomersPage() {
         description="Lihat profil, saldo, tier, dan status KYC pelanggan PPOB.ID."
       />
       {error ? (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        <div className="admin-note-error">
           {error}
         </div>
       ) : null}
@@ -143,9 +143,9 @@ export default function CustomersPage() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Cari pelanggan..."
-            className="w-full rounded-2xl border border-slate-200 px-4 py-3"
+            className="admin-input"
           />
-          <button className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white">
+          <button className="admin-button-primary">
             Cari
           </button>
         </form>

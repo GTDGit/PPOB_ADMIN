@@ -76,8 +76,8 @@ export default function ContentPage() {
   return (
     <div className="space-y-6">
       <PageHeader eyebrow="Content" title="Banner & notifikasi" description="Kelola banner aplikasi dan kirim notifikasi operasional ke user." />
-      {error ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
-      {success ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div> : null}
+      {error ? <div className="admin-note-error">{error}</div> : null}
+      {success ? <div className="admin-note-success">{success}</div> : null}
       <Panel title="Buat banner" description="Banner sederhana untuk home app atau campaign aktif.">
         <form className="grid gap-4 lg:grid-cols-2" onSubmit={async (e) => {
           e.preventDefault();
@@ -91,14 +91,14 @@ export default function ContentPage() {
             setError(extractApiError(error));
           }
         }}>
-          <input value={bannerForm.title} onChange={(e) => setBannerForm((f) => ({ ...f, title: e.target.value }))} placeholder="Judul banner" className="rounded-2xl border border-slate-200 px-4 py-3" required />
-          <input value={bannerForm.subtitle} onChange={(e) => setBannerForm((f) => ({ ...f, subtitle: e.target.value }))} placeholder="Subtitle banner" className="rounded-2xl border border-slate-200 px-4 py-3" />
-          <input value={bannerForm.imageUrl} onChange={(e) => setBannerForm((f) => ({ ...f, imageUrl: e.target.value }))} placeholder="Image URL" className="rounded-2xl border border-slate-200 px-4 py-3" required />
-          <input value={bannerForm.actionValue} onChange={(e) => setBannerForm((f) => ({ ...f, actionValue: e.target.value }))} placeholder="Action value / URL" className="rounded-2xl border border-slate-200 px-4 py-3" />
-          <input value={bannerForm.startDate} onChange={(e) => setBannerForm((f) => ({ ...f, startDate: e.target.value }))} type="datetime-local" className="rounded-2xl border border-slate-200 px-4 py-3" required />
-          <input value={bannerForm.endDate} onChange={(e) => setBannerForm((f) => ({ ...f, endDate: e.target.value }))} type="datetime-local" className="rounded-2xl border border-slate-200 px-4 py-3" required />
+          <input value={bannerForm.title} onChange={(e) => setBannerForm((f) => ({ ...f, title: e.target.value }))} placeholder="Judul banner" className="admin-input" required />
+          <input value={bannerForm.subtitle} onChange={(e) => setBannerForm((f) => ({ ...f, subtitle: e.target.value }))} placeholder="Subtitle banner" className="admin-input" />
+          <input value={bannerForm.imageUrl} onChange={(e) => setBannerForm((f) => ({ ...f, imageUrl: e.target.value }))} placeholder="Image URL" className="admin-input" required />
+          <input value={bannerForm.actionValue} onChange={(e) => setBannerForm((f) => ({ ...f, actionValue: e.target.value }))} placeholder="Action value / URL" className="admin-input" />
+          <input value={bannerForm.startDate} onChange={(e) => setBannerForm((f) => ({ ...f, startDate: e.target.value }))} type="datetime-local" className="admin-input" required />
+          <input value={bannerForm.endDate} onChange={(e) => setBannerForm((f) => ({ ...f, endDate: e.target.value }))} type="datetime-local" className="admin-input" required />
           <div className="lg:col-span-2">
-            <button className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white">Buat banner</button>
+            <button className="admin-button-primary">Buat banner</button>
           </div>
         </form>
       </Panel>
@@ -116,11 +116,11 @@ export default function ContentPage() {
             setError(extractApiError(error));
           }
         }}>
-          <input value={notificationForm.title} onChange={(e) => setNotificationForm((f) => ({ ...f, title: e.target.value }))} placeholder="Judul notifikasi" className="rounded-2xl border border-slate-200 px-4 py-3" required />
-          <input value={notificationForm.shortBody} onChange={(e) => setNotificationForm((f) => ({ ...f, shortBody: e.target.value }))} placeholder="Short body" className="rounded-2xl border border-slate-200 px-4 py-3" />
-          <textarea value={notificationForm.body} onChange={(e) => setNotificationForm((f) => ({ ...f, body: e.target.value }))} placeholder="Isi notifikasi" className="rounded-2xl border border-slate-200 px-4 py-3 lg:col-span-2" rows={4} required />
+          <input value={notificationForm.title} onChange={(e) => setNotificationForm((f) => ({ ...f, title: e.target.value }))} placeholder="Judul notifikasi" className="admin-input" required />
+          <input value={notificationForm.shortBody} onChange={(e) => setNotificationForm((f) => ({ ...f, shortBody: e.target.value }))} placeholder="Short body" className="admin-input" />
+          <textarea value={notificationForm.body} onChange={(e) => setNotificationForm((f) => ({ ...f, body: e.target.value }))} placeholder="Isi notifikasi" className="admin-textarea lg:col-span-2" rows={4} required />
           <div className="lg:col-span-2">
-            <button className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white">Kirim notifikasi</button>
+            <button className="admin-button-primary">Kirim notifikasi</button>
           </div>
         </form>
       </Panel>
@@ -136,7 +136,7 @@ export default function ContentPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <StatusBadge value={Boolean(banner.is_active) ? "active" : "inactive"} />
-                  <button onClick={() => void adminApi.deleteBanner(String(banner.id)).then(load).catch((error) => setError(extractApiError(error)))} className="rounded-2xl border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700">Hapus</button>
+                  <button onClick={() => void adminApi.deleteBanner(String(banner.id)).then(load).catch((error) => setError(extractApiError(error)))} className="admin-button-danger">Hapus</button>
                 </div>
               </div>
             </div>
