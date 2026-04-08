@@ -58,3 +58,14 @@ export function isUnauthorizedError(error: unknown) {
 }
 
 export type ApiClientError = AxiosError<ApiErrorEnvelope>;
+
+/**
+ * Build full URL for S3 files served via backend proxy.
+ * avatarKey is the S3 object key stored in DB, e.g. "admin-avatars/adm_abc/uuid.jpg"
+ */
+export function getFileUrl(key: string | undefined | null): string | undefined {
+  if (!key) return undefined;
+  // Already a full URL (legacy data) — return as-is
+  if (key.startsWith("http://") || key.startsWith("https://")) return key;
+  return `${API_BASE_URL}/files/${key}`;
+}

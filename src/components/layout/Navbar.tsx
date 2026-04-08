@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
-import { usePathname } from "next/navigation";
-import { BellDot, Menu, ShieldCheck } from "lucide-react";
+import { useMemo, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { BellDot, LogOut, Menu, User } from "lucide-react";
 import { prettifyResourceLabel, titleCase } from "@/lib/format";
 import { useAuth } from "@/lib/auth/AuthProvider";
+import { Avatar } from "@/components/admin/Avatar";
 
 const labelMap: Record<string, string> = {
   dashboard: "Dashboard",
@@ -23,6 +24,7 @@ const labelMap: Record<string, string> = {
   "audit-logs": "Audit Log",
   "reference-data": "Data Referensi",
   settings: "Pengaturan",
+  profile: "Profil Saya",
 };
 
 const descriptionMap: Record<string, string> = {
@@ -42,11 +44,14 @@ const descriptionMap: Record<string, string> = {
   "audit-logs": "Telusuri aktivitas admin, perubahan data, dan jejak aksi.",
   "reference-data": "Kelola data referensi yang dipakai modul operasional.",
   settings: "Atur pengaturan global console, keamanan, dan preferensi.",
+  profile: "Kelola nama, foto profil, dan informasi akun Anda.",
 };
 
 export function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const router = useRouter();
+  const { user, logout } = useAuth();
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const { title, description } = useMemo(() => {
     const segments = pathname.split("/").filter(Boolean);
@@ -103,13 +108,52 @@ export function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
           <div className="hidden rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 lg:block">
             {todayLabel}
           </div>
-          <div className="hidden rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600 md:flex md:items-center md:gap-2">
-            <ShieldCheck className="h-4 w-4 text-blue-600" />
-            <span>{roleLabel}</span>
-          </div>
           <button className="rounded-2xl border border-slate-200 bg-white p-3 text-slate-500 shadow-sm transition hover:border-blue-200 hover:text-blue-600">
             <BellDot className="h-5 w-5" />
           </button>
+
+          {/* Profile dropdown */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setProfileOpen((v) => !v)}
+              className="flex items-center gap-2.5 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-left shadow-sm transition hover:border-blue-200"
+            >
+              <Avatar src={user?.avatarUrl} name={user?.fullName || "Admin"} size="sm" />
+              <div className="hidden md:block">
+                <p className="text-sm font-semibold text-slate-900 leading-tight">{user?.fullName || "Admin"}</p>
+                <p className="text-[11px] text-slate-500 leading-tight">{roleLabel}</p>
+              </div>
+              <svg className="h-4 w-4 text-slate-400 hidden md:block" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+            </button>
+
+            {profileOpen && (
+              <div className="absolute right-0 top-full z-50 mt-2 w-52 rounded-2xl border border-slate-200 bg-white py-1.5 shadow-xl">
+                <button
+                  type="button"
+                  className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
+                  onClick={() => {
+                    setProfileOpen(false);
+                    router.push("/dashboard/profile");
+                  }}
+                >
+                  <User className="h-4 w-4 text-slate-400" />
+                  Profil Saya
+                </button>
+                <button
+                  type="button"
+                  className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50"
+                  onClick={() => {
+                    setProfileOpen(false);
+                    void logout();
+                  }}
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>

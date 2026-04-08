@@ -25,6 +25,7 @@ interface AuthContextValue {
   completeActivation: (payload: AdminAuthPayload) => void;
   logout: (redirectToLogin?: boolean) => Promise<void>;
   refreshSession: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
   hasPermission: (permission?: string) => boolean;
   hasAnyPermission: (requiredPermissions?: string[]) => boolean;
 }
@@ -164,6 +165,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [applyAuth],
   );
 
+  const refreshProfile = useCallback(async () => {
+    try {
+      const me = await adminApi.me();
+      setUser(me.user);
+      setPermissions(me.permissions);
+      window.localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(me.user));
+      window.localStorage.setItem(STORAGE_KEYS.permissions, JSON.stringify(me.permissions));
+    } catch {
+      // silent — profile refresh is best-effort
+    }
+  }, []);
+
   const logout = useCallback(
     async (redirectToLogin = true) => {
       try {
@@ -193,6 +206,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       completeActivation,
       logout,
       refreshSession,
+      refreshProfile,
       hasPermission: (permission?: string) => hasPermission(permissions, permission),
       hasAnyPermission: (requiredPermissions?: string[]) =>
         hasAnyPermission(permissions, requiredPermissions),
@@ -204,6 +218,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login,
       logout,
       permissions,
+      refreshProfile,
       refreshSession,
       refreshToken,
       user,

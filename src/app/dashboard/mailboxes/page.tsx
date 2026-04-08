@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/admin/PageHeader";
 import { Panel } from "@/components/admin/Panel";
 import { PermissionFallback } from "@/components/admin/PermissionFallback";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import { Avatar } from "@/components/admin/Avatar";
 import { formatDateTime, prettifyStatus } from "@/lib/format";
 import type { AdminMailbox, GenericRecord, PaginatedResponse } from "@/lib/types";
 
@@ -92,9 +93,12 @@ export default function MailboxesPage() {
         key: "mailbox",
         header: "Mailbox",
         render: (row) => (
-          <button type="button" onClick={() => setSelected(row)} className="text-left">
-            <p className="font-semibold text-slate-900">{row.displayName}</p>
-            <p className="mt-1 text-xs text-slate-500">{row.address}</p>
+          <button type="button" onClick={() => setSelected(row)} className="flex items-center gap-3 text-left">
+            <Avatar name={row.displayName || row.address} size="sm" />
+            <div>
+              <p className="font-semibold text-slate-900">{row.displayName}</p>
+              <p className="mt-0.5 text-xs text-slate-500">{row.address}</p>
+            </div>
           </button>
         ),
       },
@@ -208,13 +212,21 @@ export default function MailboxesPage() {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-800">Display name</label>
+              <label className="mb-2 block text-sm font-semibold text-slate-800">Nama pengirim (From name)</label>
               <input
                 className="admin-input"
                 value={form.displayName}
                 onChange={(event) => setForm((current) => ({ ...current, displayName: event.target.value }))}
                 placeholder="Contoh: Customer Support"
               />
+              <p className="mt-1.5 text-xs text-slate-400">
+                Nama ini terlihat oleh penerima email di field From.
+              </p>
+              {form.displayName.trim() && form.address.trim() && (
+                <div className="mt-2 rounded-xl bg-blue-50 px-4 py-2 text-sm font-mono text-blue-800">
+                  {form.displayName.trim()} &lt;{form.address.trim()}&gt;
+                </div>
+              )}
             </div>
 
             <div>

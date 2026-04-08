@@ -361,4 +361,39 @@ export const adminApi = {
       apiClient.get("/email-logs", listParams({ search, status, category, page, perPage })),
     );
   },
+  updateProfile(fullName: string) {
+    return unwrapResponse<{ message: string; user: GenericRecord }>(
+      apiClient.patch("/admins/me/profile", { fullName }),
+    );
+  },
+  composeEmail(payload: {
+    mailboxId: string;
+    to: string[];
+    cc?: string[];
+    bcc?: string[];
+    subject: string;
+    body?: string;
+    htmlBody?: string;
+  }) {
+    return unwrapResponse<{ threadId: string; messageId: string; providerMessageId?: string }>(
+      apiClient.post("/email/compose", payload),
+    );
+  },
+  updateMailboxDisplayName(id: string, displayName: string) {
+    return unwrapResponse<{ mailbox: GenericRecord }>(
+      apiClient.patch(`/mailboxes/${id}/display-name`, { displayName }),
+    );
+  },
+  uploadAvatar(file: File) {
+    const formData = new FormData();
+    formData.append("avatar", file);
+    return unwrapResponse<{ avatarUrl: string }>(
+      apiClient.post("/admins/me/avatar", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      }),
+    );
+  },
+  removeAvatar() {
+    return unwrapResponse<{ message: string }>(apiClient.delete("/admins/me/avatar"));
+  },
 };

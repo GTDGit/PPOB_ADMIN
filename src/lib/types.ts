@@ -26,6 +26,7 @@ export interface AdminUserSummary {
   email: string;
   phone: string;
   fullName: string;
+  avatarUrl?: string;
   status: string;
   isActive: boolean;
   lastLoginAt?: string | null;
