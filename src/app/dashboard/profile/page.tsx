@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { Camera, Save, Trash2 } from "lucide-react";
+import { Camera, Linkedin, Save, Trash2 } from "lucide-react";
 import { adminApi } from "@/lib/api/admin";
 import { extractApiError } from "@/lib/api/client";
 import { useAuth } from "@/lib/auth/AuthProvider";
@@ -13,13 +13,14 @@ import { prettifyResourceLabel } from "@/lib/format";
 export default function ProfilePage() {
   const { user, refreshProfile } = useAuth();
   const [fullName, setFullName] = useState(user?.fullName || "");
+  const [linkedinUrl, setLinkedinUrl] = useState(user?.linkedinUrl || "");
   const [busy, setBusy] = useState(false);
   const [avatarBusy, setAvatarBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSaveName = useCallback(async () => {
+  const handleSaveProfile = useCallback(async () => {
     if (!fullName.trim() || fullName.trim().length < 3) {
       setError("Nama lengkap minimal 3 karakter");
       return;
@@ -28,15 +29,15 @@ export default function ProfilePage() {
     setError("");
     setNotice("");
     try {
-      await adminApi.updateProfile(fullName.trim());
+      await adminApi.updateProfile(fullName.trim(), linkedinUrl.trim() || undefined);
       await refreshProfile();
-      setNotice("Nama berhasil diperbarui");
+      setNotice("Profil berhasil diperbarui");
     } catch (err) {
       setError(extractApiError(err));
     } finally {
       setBusy(false);
     }
-  }, [fullName, refreshProfile]);
+  }, [fullName, linkedinUrl, refreshProfile]);
 
   const handleAvatarUpload = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,6 +84,10 @@ export default function ProfilePage() {
     }
   }, [refreshProfile]);
 
+  const hasProfileChanged =
+    fullName.trim() !== (user?.fullName || "") ||
+    (linkedinUrl.trim() || "") !== (user?.linkedinUrl || "");
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -103,6 +108,9 @@ export default function ProfilePage() {
             <div className="text-center">
               <p className="text-base font-semibold text-slate-900">{user?.fullName}</p>
               <p className="text-sm text-slate-500">{user?.email}</p>
+              {user?.positionName && (
+                <p className="mt-1 text-sm text-blue-600 font-medium">{user.positionName}</p>
+              )}
               <div className="mt-2 flex flex-wrap justify-center gap-1.5">
                 {(user?.roles || []).map((role) => (
                   <span key={role} className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[11px] font-semibold text-blue-700">
@@ -150,7 +158,7 @@ export default function ProfilePage() {
         </Panel>
 
         {/* Info Profil */}
-        <Panel title="Informasi profil" description="Edit nama lengkap Anda. Email tidak dapat diubah.">
+        <Panel title="Informasi profil" description="Edit nama lengkap dan LinkedIn Anda. Email tidak dapat diubah.">
           <div className="space-y-5">
             <div>
               <label className="mb-2 block text-sm font-semibold text-slate-800">Email</label>
@@ -172,6 +180,16 @@ export default function ProfilePage() {
             </div>
 
             <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-800">Posisi</label>
+              <input
+                className="admin-input !bg-slate-50 !text-slate-500"
+                value={user?.positionName || "Belum ditentukan"}
+                disabled
+              />
+              <p className="mt-1.5 text-xs text-slate-400">Posisi diatur oleh Super Admin.</p>
+            </div>
+
+            <div>
               <label className="mb-2 block text-sm font-semibold text-slate-800">Nama lengkap</label>
               <input
                 className="admin-input"
@@ -184,12 +202,28 @@ export default function ProfilePage() {
               </p>
             </div>
 
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-800">
+                <Linkedin className="inline h-4 w-4 mr-1 text-blue-600" />
+                LinkedIn URL
+              </label>
+              <input
+                className="admin-input"
+                value={linkedinUrl}
+                onChange={(e) => setLinkedinUrl(e.target.value)}
+                placeholder="https://linkedin.com/in/username"
+              />
+              <p className="mt-1.5 text-xs text-slate-400">
+                URL LinkedIn Anda ditampilkan di tanda tangan email.
+              </p>
+            </div>
+
             <div className="flex justify-end pt-2">
               <button
                 type="button"
                 className="admin-button-primary flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
-                disabled={busy || !fullName.trim() || fullName.trim() === user?.fullName}
-                onClick={() => void handleSaveName()}
+                disabled={busy || !fullName.trim() || !hasProfileChanged}
+                onClick={() => void handleSaveProfile()}
               >
                 <Save className="h-4 w-4" />
                 {busy ? "Menyimpan..." : "Simpan Perubahan"}
@@ -198,6 +232,34 @@ export default function ProfilePage() {
           </div>
         </Panel>
       </div>
+
+      {/* Signature Preview */}
+      <Panel title="Preview Tanda Tangan Email" description="Tanda tangan ini otomatis ditambahkan di setiap email yang Anda kirim.">
+        <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-5 py-4">
+          <p className="text-sm text-slate-600 leading-relaxed">
+            Best Regards,
+            <br />
+            <strong className="text-slate-900">{user?.fullName || "Nama Anda"}</strong>
+            <br />
+            {user?.positionName && (
+              <>
+                {user.positionName}
+                <br />
+              </>
+            )}
+            Email: {user?.email || "email@ppob.id"}
+            <br />
+            {(linkedinUrl.trim() || user?.linkedinUrl) && (
+              <>
+                LinkedIn:{" "}
+                <a href={linkedinUrl.trim() || user?.linkedinUrl} className="text-blue-600 underline" target="_blank" rel="noreferrer">
+                  {linkedinUrl.trim() || user?.linkedinUrl}
+                </a>
+              </>
+            )}
+          </p>
+        </div>
+      </Panel>
     </div>
   );
 }

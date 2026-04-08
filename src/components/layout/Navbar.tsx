@@ -25,6 +25,10 @@ const labelMap: Record<string, string> = {
   "reference-data": "Data Referensi",
   settings: "Pengaturan",
   profile: "Profil Saya",
+  positions: "Manajemen Posisi",
+  inbox: "Inbox",
+  mailboxes: "Mailboxes",
+  "email-logs": "Email Logs",
 };
 
 const descriptionMap: Record<string, string> = {
@@ -45,6 +49,10 @@ const descriptionMap: Record<string, string> = {
   "reference-data": "Kelola data referensi yang dipakai modul operasional.",
   settings: "Atur pengaturan global console, keamanan, dan preferensi.",
   profile: "Kelola nama, foto profil, dan informasi akun Anda.",
+  positions: "Kelola posisi karyawan, tetapkan admin ke posisi organisasi.",
+  inbox: "Pantau email masuk, balas langsung, atau kirim email baru dari console.",
+  mailboxes: "Kelola mailbox operasional, shared, dan sistem.",
+  "email-logs": "Telusuri log pengiriman email dan status delivery.",
 };
 
 export function Navbar({ onMenuClick }: { onMenuClick: () => void }) {

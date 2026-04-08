@@ -361,9 +361,9 @@ export const adminApi = {
       apiClient.get("/email-logs", listParams({ search, status, category, page, perPage })),
     );
   },
-  updateProfile(fullName: string) {
+  updateProfile(fullName: string, linkedinUrl?: string) {
     return unwrapResponse<{ message: string; user: GenericRecord }>(
-      apiClient.patch("/admins/me/profile", { fullName }),
+      apiClient.patch("/admins/me/profile", { fullName, linkedinUrl }),
     );
   },
   composeEmail(payload: {
@@ -378,6 +378,47 @@ export const adminApi = {
     return unwrapResponse<{ threadId: string; messageId: string; providerMessageId?: string }>(
       apiClient.post("/email/compose", payload),
     );
+  },
+  composeEmailWithAttachments(formData: FormData) {
+    return unwrapResponse<{ threadId: string; messageId: string; providerMessageId?: string }>(
+      apiClient.post("/email/compose", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      }),
+    );
+  },
+  replyThreadWithAttachments(id: string, formData: FormData) {
+    return unwrapResponse<{ message: string; threadId: string; messageId: string; providerMessageId?: string }>(
+      apiClient.post(`/threads/${id}/reply`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      }),
+    );
+  },
+  toggleThreadImportant(id: string, isImportant: boolean) {
+    return unwrapResponse<{ message: string }>(
+      apiClient.patch(`/threads/${id}/important`, { isImportant }),
+    );
+  },
+  // Position management
+  listPositions() {
+    return unwrapResponse<GenericRecord[]>(apiClient.get("/positions"));
+  },
+  createPosition(name: string) {
+    return unwrapResponse<GenericRecord>(apiClient.post("/positions", { name }));
+  },
+  updatePosition(id: string, name: string) {
+    return unwrapResponse<GenericRecord>(apiClient.patch(`/positions/${id}`, { name }));
+  },
+  deletePosition(id: string) {
+    return unwrapResponse<{ message: string }>(apiClient.delete(`/positions/${id}`));
+  },
+  getPositionAdmins(id: string) {
+    return unwrapResponse<GenericRecord[]>(apiClient.get(`/positions/${id}/admins`));
+  },
+  assignPosition(positionId: string, adminId: string) {
+    return unwrapResponse<{ message: string }>(apiClient.post(`/positions/${positionId}/assign`, { adminId }));
+  },
+  removeAdminPosition(adminId: string) {
+    return unwrapResponse<{ message: string }>(apiClient.delete(`/admins/${adminId}/position`));
   },
   updateMailboxDisplayName(id: string, displayName: string) {
     return unwrapResponse<{ mailbox: GenericRecord }>(

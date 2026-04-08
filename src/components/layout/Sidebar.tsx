@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   BookOpenCheck,
   Boxes,
+  Briefcase,
   CreditCard,
   FileStack,
   Inbox,
@@ -65,6 +66,12 @@ const navigation = [
         href: "/dashboard/roles",
         permission: "roles.view",
         icon: BookOpenCheck,
+      },
+      {
+        label: "Posisi",
+        href: "/dashboard/positions",
+        permission: "admins.view",
+        icon: Briefcase,
       },
       {
         label: "Pelanggan",

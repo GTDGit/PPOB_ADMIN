@@ -27,6 +27,9 @@ export interface AdminUserSummary {
   phone: string;
   fullName: string;
   avatarUrl?: string;
+  positionId?: string;
+  positionName?: string;
+  linkedinUrl?: string;
   status: string;
   isActive: boolean;
   lastLoginAt?: string | null;
