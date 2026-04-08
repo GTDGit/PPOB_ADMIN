@@ -6,6 +6,7 @@ import {
   BookOpenCheck,
   Boxes,
   Briefcase,
+  Layers,
   CreditCard,
   FileStack,
   Inbox,
@@ -120,6 +121,12 @@ const navigation = [
   {
     section: "Produk & Kontrol",
     items: [
+      {
+        label: "Kelola Layanan",
+        href: "/dashboard/services",
+        permission: "catalog.view",
+        icon: Layers,
+      },
       {
         label: "Produk & Layanan",
         href: "/dashboard/catalog",

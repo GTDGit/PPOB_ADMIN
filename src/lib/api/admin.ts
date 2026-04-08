@@ -437,4 +437,12 @@ export const adminApi = {
   removeAvatar() {
     return unwrapResponse<{ message: string }>(apiClient.delete("/admins/me/avatar"));
   },
+
+  // ========== Services ==========
+  listServices() {
+    return unwrapResponse<GenericRecord[]>(apiClient.get("/catalog/services"));
+  },
+  updateService(id: string, payload: GenericRecord) {
+    return unwrapResponse<{ message: string }>(apiClient.patch(`/catalog/services/${id}`, payload));
+  },
 };
