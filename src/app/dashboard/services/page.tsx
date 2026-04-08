@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Layers, Pencil, Save, X, ExternalLink, Upload } from "lucide-react";
+import { Pencil, Save, X, ExternalLink, Upload } from "lucide-react";
 import { adminApi } from "@/lib/api/admin";
 import { extractApiError } from "@/lib/api/client";
 import type { GenericRecord } from "@/lib/types";
@@ -115,7 +115,6 @@ export default function ServicesPage() {
         eyebrow="Produk & Kontrol"
         title="Kelola Layanan"
         description="Atur icon, nama, link prefix, status, dan urutan layanan yang tampil di aplikasi."
-        icon={Layers}
       />
 
       {error && (
