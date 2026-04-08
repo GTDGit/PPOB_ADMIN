@@ -290,7 +290,7 @@ export default function ServicesPage() {
                         </div>
                       </td>
                       <td className="py-3 px-4">
-                        <StatusBadge status={String(svc.status)} />
+                        <StatusBadge value={String(svc.status)} />
                       </td>
                       <td className="py-3 px-4">
                         {svc.badge ? (
