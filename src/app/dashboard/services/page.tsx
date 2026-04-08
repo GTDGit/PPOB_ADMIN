@@ -148,6 +148,7 @@ export default function ServicesPage() {
                   <th className="py-3 px-4 font-medium">#</th>
                   <th className="py-3 px-4 font-medium">Icon</th>
                   <th className="py-3 px-4 font-medium">Nama</th>
+                  <th className="py-3 px-4 font-medium">Kategori</th>
                   <th className="py-3 px-4 font-medium">Route / Link</th>
                   <th className="py-3 px-4 font-medium">Status</th>
                   <th className="py-3 px-4 font-medium">Badge</th>
@@ -194,6 +195,9 @@ export default function ServicesPage() {
                             value={String(editData.name || "")}
                             onChange={(e) => setEditData({ ...editData, name: e.target.value })}
                           />
+                        </td>
+                        <td className="py-3 px-4 text-xs text-gray-500">
+                          {String(svc.category_name || "—")}
                         </td>
                         <td className="py-3 px-4">
                           <input
@@ -274,6 +278,9 @@ export default function ServicesPage() {
                         )}
                       </td>
                       <td className="py-3 px-4 font-medium">{String(svc.name)}</td>
+                      <td className="py-3 px-4">
+                        <span className="text-xs text-gray-500">{String(svc.category_name || "—")}</span>
+                      </td>
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-1">
                           <code className="text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
