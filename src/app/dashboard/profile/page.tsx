@@ -247,7 +247,7 @@ export default function ProfilePage() {
                 <br />
               </>
             )}
-            Email: {user?.email || "email@ppob.id"}
+            Email: {user?.mailboxEmail || user?.email || "email@ppob.id"}
             <br />
             {(linkedinUrl.trim() || user?.linkedinUrl) && (
               <>

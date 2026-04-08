@@ -233,9 +233,10 @@ export default function InboxPage() {
   // Signature preview built from user profile
   const signatureHtml = useMemo(() => {
     if (!user) return "";
+    const sigEmail = user.mailboxEmail || user.email;
     let sig = `<p style="font-size:13px;color:#475569;line-height:1.6;">Best Regards,<br/><strong>${user.fullName || "Admin"}</strong><br/>`;
     if (user.positionName) sig += `${user.positionName}<br/>`;
-    sig += `Email: ${user.email}<br/>`;
+    sig += `Email: ${sigEmail}<br/>`;
     if (user.linkedinUrl) sig += `LinkedIn: <a href="${user.linkedinUrl}" style="color:#2563eb;">${user.linkedinUrl}</a><br/>`;
     sig += `</p>`;
     return sig;

@@ -30,6 +30,7 @@ export interface AdminUserSummary {
   positionId?: string;
   positionName?: string;
   linkedinUrl?: string;
+  mailboxEmail?: string;
   status: string;
   isActive: boolean;
   lastLoginAt?: string | null;
