@@ -445,4 +445,13 @@ export const adminApi = {
   updateService(id: string, payload: GenericRecord) {
     return unwrapResponse<{ message: string }>(apiClient.patch(`/catalog/services/${id}`, payload));
   },
+  uploadServiceIcon(id: string, file: File) {
+    const formData = new FormData();
+    formData.append("icon", file);
+    return unwrapResponse<{ iconUrl: string }>(
+      apiClient.post(`/catalog/services/${id}/icon`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      }),
+    );
+  },
 };

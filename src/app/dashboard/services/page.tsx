@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Layers, Pencil, Save, X, ExternalLink } from "lucide-react";
+import { Layers, Pencil, Save, X, ExternalLink, Upload } from "lucide-react";
 import { adminApi } from "@/lib/api/admin";
 import { extractApiError } from "@/lib/api/client";
 import type { GenericRecord } from "@/lib/types";
@@ -24,6 +24,21 @@ export default function ServicesPage() {
   const [editId, setEditId] = useState<string | null>(null);
   const [editData, setEditData] = useState<GenericRecord>({});
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const handleIconUpload = async (serviceId: string, file: File) => {
+    setUploading(true);
+    setError("");
+    try {
+      const resp = await adminApi.uploadServiceIcon(serviceId, file);
+      setEditData((prev) => ({ ...prev, iconUrl: resp.iconUrl }));
+      setNotice("Icon berhasil diupload");
+    } catch (err) {
+      setError(extractApiError(err));
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const fetchServices = useCallback(async () => {
     try {
@@ -152,12 +167,27 @@ export default function ServicesPage() {
                       <tr key={String(svc.id)} className="border-b border-gray-50 bg-blue-50/50">
                         <td className="py-3 px-4 text-gray-400">{String(svc.id)}</td>
                         <td className="py-3 px-4">
-                          <input
-                            className="admin-input w-full text-xs"
-                            placeholder="URL icon (https://...)"
-                            value={String(editData.iconUrl || "")}
-                            onChange={(e) => setEditData({ ...editData, iconUrl: e.target.value })}
-                          />
+                          <div className="flex items-center gap-1">
+                            <input
+                              className="admin-input w-full text-xs"
+                              placeholder="URL icon (https://...)"
+                              value={String(editData.iconUrl || "")}
+                              onChange={(e) => setEditData({ ...editData, iconUrl: e.target.value })}
+                            />
+                            <label className="admin-button-secondary text-xs px-2 py-1 cursor-pointer flex items-center gap-1 shrink-0">
+                              <Upload size={12} />
+                              {uploading ? "..." : "Upload"}
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file && editId) void handleIconUpload(editId, file);
+                                }}
+                              />
+                            </label>
+                          </div>
                         </td>
                         <td className="py-3 px-4">
                           <input
